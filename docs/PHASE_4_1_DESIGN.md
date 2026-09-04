@@ -1,6 +1,8 @@
 # Phase 4.1 — RL interface and experimental protocol
 
-Status: implemented and offline-validated; autonomous live episodes remain blocked by documented harness v0.1.0 gaps.
+Status: implemented and offline-validated. A release-gated live factory and
+upstream lifecycle candidate exist; autonomous live episodes remain blocked by
+live validation, an automatic reset driver, and the absent immutable release.
 
 ## Boundary audit
 
@@ -29,7 +31,12 @@ Reset preparation is injected. Under v0.1.0, only operator-prepared adoption is 
 
 ## Initial condition and protocol
 
-Adventure 1-5 is the proposed first target: five active daytime rows, Sunflower economy, multiple defensive lanes, and enough unlocked plants to create non-trivial timing and allocation choices while remaining debuggable. The profile must match `adventure_level`, active rows, expected seed types, normal speed, and a 250 ms decision interval before any live run. If unavailable, add a separate profile rather than relabeling another level.
+Adventure 1-4 is the proposed first target: it is a regular daytime level with
+all five lawn lanes and the early Sunflower/Peashooter economy. The previous
+1-5 proposal was invalidated because that level is Wall-nut Bowling. The
+profile must still match the live `adventure_level`, exact seed types, normal
+speed, and a 250 ms decision interval. Active rows remain an explicit profile
+assertion because GameState v1 cannot prove temporary row activation.
 
 Training uses random initialization, explicit step/episode/wall-clock bounds, periodic and final checkpoints, exact config copies, immutable manifests, separate Python/NumPy/PyTorch/framework/policy seed fields, and `game_rng_controlled: false`. A run can fine-tune from an explicitly named parent checkpoint; silent latest-checkpoint selection is prohibited.
 
@@ -41,4 +48,10 @@ The first baseline preserves `harness_reward_v1`: terminal ±1, wave delta shapi
 
 ## Blockers and release decision
 
-No harness source was changed. Authoritative outcome/reset work requires reverse engineering plus live validation against GOTY 1.2.0.1073; implementing guessed offsets or UI clicks would violate the frozen boundary and safety rules. Pickup collection likewise needs a serialized, focus-gated environment service so it does not distort strategic step counts. Game speed remains 1x because only memory-patching reference behavior was found. A future backward-compatible harness capability release should add typed outcome, typed verified same-level reset, and pickup diagnostics, retain all v1 schemas, pass its full suite, and be tagged before this repository changes its pin.
+The harness feature branch now has typed raw outcome evidence, reset
+postcondition verification, and synchronous serialized pickup collection. Its
+199-test offline suite passes. A read-only real Board produced `RUNNING`, but
+WON/LOST and pickup behavior are not validated, and reset has only an
+operator-assisted callback: no automatic driver is claimed. Phase 4 therefore
+keeps the v0.1.0 pin and the live factory refuses construction until v0.2.0 is
+published. Game speed remains 1x.

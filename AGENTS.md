@@ -207,5 +207,5 @@ The Phase 1–3.5 technical history remains in the harness repository and should
 - Generated run truth lives under ignored `artifacts/runs/<run-id>/`; tracked conclusions live under `results/levels/` and `results/RESULTS.md`.
 - Never edit a completed manifest, silently resume a checkpoint, change reward semantics without a new profile/version, mix tuning and held-out evaluation episodes, or describe mock output as live.
 - The dashboard is a frontend to public harness/run APIs. It must not own Windows input, runtime safety, action threads, or mutable canonical configuration.
-- Harness v0.1.0 lacks authoritative outcome, automatic same-level reset, and managed pickups. Live multi-episode commands fail closed until a tested/tagged compatible harness release supplies these capabilities and the pin/contract metadata are deliberately upgraded.
-- The next subphase is the bounded harness training-support capability and live validation, followed by a real Adventure 1-5 pilot; do not claim Phase 4 completion before both.
+- Harness v0.1.0 remains the durable pin. A feature-branch candidate supplies outcome/reset-verification/pickup APIs, but no automatic reset driver or immutable release exists. Live commands must keep failing closed until validation, release, and deliberate pin upgrade.
+- Adventure 1-4 replaces 1-5 as the candidate because 1-5 is Wall-nut Bowling. The next subphase is the ordered lifecycle validation and automatic reset driver, followed by a bounded 1-4 pilot; do not claim Phase 4 completion before both.

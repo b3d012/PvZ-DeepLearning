@@ -134,7 +134,10 @@ If Phase 4 discovers a missing low-level capability, first decide whether the pr
 - **Framework:** Gymnasium 1.2.2 with Stable-Baselines3/sb3-contrib 2.9.0. A thin adapter preserves the harness contract and Gymnasium's terminated/truncated distinction.
 - **First algorithm:** MaskablePPO. Native changing-action masks and mature local checkpoint/metric support outweigh its on-policy sample-efficiency limitation for the first baseline. DQN variants remain the most important future off-policy comparison.
 - **Model:** flat Observation v1 MLP `[128,128]`, with tracked medium/large variants. A structured extractor is deferred until observation slices are public versioned metadata.
-- **Initial level:** Adventure 1-5, proposed because it combines a five-lane daytime board, Sunflower economy, and non-trivial defense while remaining debuggable.
+- **Initial level:** Adventure 1-4, a regular five-lane daytime economy/defense
+  level. The earlier 1-5 proposal was rejected because it is Wall-nut Bowling,
+  a conveyor/bowling condition that does not exercise the intended Action v1
+  placement problem.
 - **Reward:** unchanged harness Reward v1. Additional shaping requires a new named/versioned profile and reward-component tests.
 - **Tuning objective:** held-out normalized wave progress, then evaluation return while wins remain sparse; win rate becomes primary only after natural outcomes are reliable and frequent.
 - **Reset/pickup/speed:** operator-prepared reset, no managed pickup service, and 1x only under harness v0.1.0. These are explicit blockers, not model-layer workarounds.
@@ -145,7 +148,7 @@ Alternatives and the full rationale are recorded in `docs/PHASE_4_1_DESIGN.md`.
 
 1. Release backward-compatible authoritative terminal, verified same-level reset, and serialized pickup support in the harness after offline and live validation.
 2. Pin that immutable release and update contract metadata here.
-3. Run a bounded Adventure 1-5 attach/reset/action/reward/checkpoint/resume pilot.
+3. Run a bounded Adventure 1-4 attach/reset/action/reward/checkpoint/resume pilot.
 4. Evaluate random-valid, scripted, and learned policies with the identical protocol.
 5. Run sequential Optuna trials, then fresh multi-seed confirmation on held-out episodes.
 

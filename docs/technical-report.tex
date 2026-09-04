@@ -16,7 +16,13 @@
 \maketitle
 
 \begin{abstract}
-This report documents the first complete offline implementation of the machine-learning layer. Phases 1--3.5 are provided by \texttt{PvZ-AI-Harness} v0.1.0. Phase 4 selects a masked actor--critic baseline, implements configuration, training, manifests, evaluation, tuning, reward audit, and monitoring, and validates them against a contract-shaped synthetic environment. No live learned-policy result is claimed because the frozen harness cannot yet reset repeated episodes or identify natural outcomes authoritatively.
+This report documents the offline machine-learning layer and its release-gated
+live integration candidate. Phases 1--3.5 are provided by
+\texttt{PvZ-AI-Harness} v0.1.0. Phase 4 selects a masked actor--critic baseline,
+implements configuration, training, manifests, evaluation, tuning, reward
+audit, monitoring, and a live factory, and validates them against a
+contract-shaped synthetic environment. No live learned-policy result is
+claimed: the lifecycle candidate is neither fully live validated nor released.
 \end{abstract}
 
 \section{Relationship to the PvZ AI Harness}
@@ -62,7 +68,7 @@ The adapter passes the fixed float vector and semantic action index unchanged. N
 The initial policy/value network uses shared flat Observation v1 input and two hidden layers of 128 units. Tracked 256-by-256 and 512-by-256-by-128 alternatives support controlled comparisons. Structured encoders are deferred because unexplained hard-coded observation slices would be fragile. Algorithm backends expose build, learn, predict, save, and load operations through a registry, isolating algorithms from environment, manifest, and evaluation code.
 
 \section{Training, Checkpoints, and Provenance}
-Runs have explicit timestep, episode, and wall-clock limits. Periodic checkpoints and a final checkpoint are written even after a graceful interrupt. Each new directory contains an immutable JSON manifest and resolved YAML plus metrics, TensorBoard, evaluation, and transition subdirectories. Provenance includes both Git identities, all environment schemas, model and algorithm versions, full hyperparameters, five software seed roles, uncontrolled game RNG, device/CUDA information, timing, budget, evaluation protocol, and optional parent lineage. Compatibility is checked before resume; latest checkpoints are never selected silently.
+Runs have explicit timestep, episode, and wall-clock limits. Periodic checkpoints and a final checkpoint are written even after a graceful interrupt. Each new directory contains an immutable JSON manifest and resolved YAML plus metrics, TensorBoard, evaluation, and transition subdirectories. Provenance includes both Git identities, all environment schemas, model and algorithm versions, full hyperparameters, five software seed roles, uncontrolled game RNG, device/CUDA information, timing, budget, evaluation protocol, and optional parent lineage. Compatibility is checked before resume; latest checkpoints are never selected silently. A separate immutable \texttt{run\_completion.json} records the final checkpoint path and SHA-256, final step, stop reason, finish time, and optional evaluation reference without rewriting the initial manifest.
 
 \section{Reward and Reward-Hacking Analysis}
 The baseline retains harness Reward v1: terminal outcomes dominate, wave progress supplies small shaping, and technical diagnostics carry small penalties. Successful planting and waiting receive no activity bonus. Component logs are aggregated by episode and action; dominance warnings identify returns driven almost entirely by one component. Wave progress, natural win rate, technical failure rate, action balance, and wall time remain external metrics so increasing reward with worsening task performance is visible.
@@ -71,7 +77,12 @@ The baseline retains harness Reward v1: terminal outcomes dominate, wave progres
 Evaluation is a separate module that supplies masks for every prediction and records all episodes. It reports mean, median, standard deviation, extrema, a normal-approximation 95\% confidence interval, wave progress, and technical truncations. Baselines and learned agents must share level, reward, timing, harness, reset, and horizon. Sequential local Optuna studies are supported because only one client normally exists. While wins are sparse, tuning ranks held-out normalized wave progress then return; final claims require fresh multi-seed confirmation.
 
 \section{Dashboard and Operations}
-The Tk dashboard provides Runtime, Board, Agent, Training, Evaluation, Tuning, and Runs tabs and can inspect immutable run data. It does not duplicate Win32 control or own configuration truth. The doctor command is read-only. Live training requires explicit authorization and presently fails closed because required upstream capabilities are absent.
+The Tk dashboard provides Runtime, Board, Agent, Training, Evaluation, Tuning,
+and Runs tabs and can inspect immutable run data. Structured view models map
+public runtime snapshots, board entities, decoded masked actions, training
+history, and evaluation comparisons. It does not duplicate Win32 control or
+own configuration truth. The doctor command is read-only. Live training
+requires explicit authorization and fails closed at the immutable-release gate.
 
 \section{Planned Research Sequence}
 \begin{enumerate}
@@ -89,9 +100,9 @@ Every durable run should record the Phase 4 Git SHA, resolved harness release/SH
 The harness currently requires a manually prepared level start, explicit active rows for levels with inactive lanes, and an authoritative injected terminal detector for natural win/loss. The project therefore must distinguish true environment outcomes from configured truncations and technical runtime interruptions. Automated menu navigation and Adventure progression are outside the initial Phase 4 scope.
 
 \section{Validation and Results}
-Offline tests cover contract compatibility, adapter spaces/masks and outcome mapping, configuration rejection, manifests and immutability, checkpoint hashing, resume mismatch, evaluation aggregation, reward totals, tuning search-space validity, dashboard state, and MaskablePPO build/learn/save/load/masked prediction. Synthetic results validate software plumbing only. No PvZ process was present, so no live throughput, return, wave, win/loss, or checkpoint claim is made.
+Offline tests cover contract compatibility, adapter spaces/masks and outcome mapping, configuration rejection, manifests and immutability, completion checkpoint hashing, resume mismatch, evaluation aggregation, reward totals, tuning search-space validity, dashboard models, release-gated live construction, recovery decisions, SB3 metric extraction, and MaskablePPO build/learn/save/load/masked prediction. Synthetic results validate software plumbing only. A read-only pass observed a real paused Adventure level 7 Board and mapped its raw lifecycle evidence to \texttt{RUNNING}; no live throughput, return, win/loss, reset, pickup, or checkpoint claim follows from that observation.
 
 \section{Threats to Validity and Next Work}
-Game RNG is uncontrolled; the proposed Adventure 1-5 profile has not yet been live-confirmed; on-policy sample cost may be prohibitive; and Reward v1 may be too sparse. Most importantly, v0.1.0 only adopts an operator-prepared board and lacks authoritative natural terminal detection and managed pickups. The next work belongs in the harness: add the smallest backward-compatible typed outcome, verified same-level reset, and serialized pickup service; live-validate and release it; then deliberately update this pin and run a bounded real pilot. Shovel and speed remain deferred. Consequently the implementation is partially complete, not a completed scientific answer.
+Game RNG is uncontrolled; the proposed Adventure 1-4 profile has not yet been live-confirmed; on-policy sample cost may be prohibitive; and Reward v1 may be too sparse. Adventure 1-5 was rejected because it is Wall-nut Bowling rather than a regular economy level. The harness candidate supplies outcome evidence, reset proof, and managed pickup services, but WON/LOST and pickup collection remain unvalidated and no automatic restart driver exists. The next work is the ordered live protocol, the smallest safe automatic current-level driver, release, deliberate pin update, and bounded pilot. Shovel and speed remain deferred. Consequently the implementation is partially complete, not a scientific performance result.
 
 \end{document}
