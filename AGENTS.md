@@ -9,7 +9,7 @@ Read this before substantial changes.
 - Repository: `b3d012/PvZ-DeepLearning`
 - Upstream harness: `b3d012/PvZ-AI-Harness`
 - Initial harness pin: **v0.1.0**
-- Current milestone: **Phase 4 — deep reinforcement learning research**
+- Current milestone: **Phase 4 offline learning stack implemented; live training support blocked upstream**
 - Target game/harness platform: **Plants vs. Zombies GOTY 1.2.0.1073 on Windows**
 
 The Phase 1–3.5 game-integration stack is not implemented here. It is frozen and versioned in `PvZ-AI-Harness`.
@@ -202,5 +202,10 @@ The Phase 1–3.5 technical history remains in the harness repository and should
 
 - `PvZ-AI-Harness` v0.1.0 is the frozen upstream foundation.
 - This repository has been separated specifically for Phase 4+ learning research.
-- No learned algorithm is selected or implemented yet.
-- The next task is **Phase 4.1: design the RL-facing interface and experimental protocol before choosing/implementing the first learned baseline**.
+- Gymnasium 1.2.2, Stable-Baselines3/sb3-contrib 2.9.0, and MaskablePPO are selected.
+- `adapters/` owns Gym semantics; `algorithms/` owns backend integrations; `models` are tracked YAML architecture templates; `training/` owns bounded learning/checkpoint callbacks; `evaluation/` never shares training decisions; `tuning.py` owns sequential studies.
+- Generated run truth lives under ignored `artifacts/runs/<run-id>/`; tracked conclusions live under `results/levels/` and `results/RESULTS.md`.
+- Never edit a completed manifest, silently resume a checkpoint, change reward semantics without a new profile/version, mix tuning and held-out evaluation episodes, or describe mock output as live.
+- The dashboard is a frontend to public harness/run APIs. It must not own Windows input, runtime safety, action threads, or mutable canonical configuration.
+- Harness v0.1.0 lacks authoritative outcome, automatic same-level reset, and managed pickups. Live multi-episode commands fail closed until a tested/tagged compatible harness release supplies these capabilities and the pin/contract metadata are deliberately upgraded.
+- The next subphase is the bounded harness training-support capability and live validation, followed by a real Adventure 1-5 pilot; do not claim Phase 4 completion before both.

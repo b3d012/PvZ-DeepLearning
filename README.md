@@ -1,125 +1,69 @@
 # PvZ Deep Learning
 
-Phase 4+ research repository for training, tuning, and evaluating learning agents on top of the frozen [PvZ AI Harness](https://github.com/b3d012/PvZ-AI-Harness).
+An auditable deep-reinforcement-learning research stack for the real Plants vs. Zombies GOTY 1.2.0.1073 client, built strictly above [PvZ AI Harness v0.1.0](https://github.com/b3d012/PvZ-AI-Harness).
 
-> **Current status:** Phase 1–3.5 infrastructure is frozen in `PvZ-AI-Harness` v0.1.0. This repository begins Phase 4 and intentionally contains no trained model or committed RL algorithm yet.
-
-## Why this is a separate repository
-
-The harness is now a reusable project in its own right. Keeping learning code separate means the Windows/process/memory/controller/runtime stack can remain stable while this repository evolves quickly through experiments, model architectures, hyperparameter tuning, checkpoints, and evaluation code.
+> **Status:** Phase 4 offline implementation is complete. MaskablePPO training, masks, checkpoints, immutable manifests, evaluation, reward audit, tuning plumbing, dashboard, and mock smoke tests are implemented. Autonomous live multi-episode training is not claimed: harness v0.1.0 lacks authoritative win/loss, verified same-level reset, and environment-managed pickup collection.
 
 ```mermaid
 flowchart TD
-    G[Plants vs. Zombies GOTY 1.2.0.1073]
-    H[PvZ AI Harness v0.1.0]
-    E[Environment v1]
-    A[Phase 4 learning agent]
-    T[Training / tuning]
-    V[Evaluation / ablations]
-    G <--> H
-    H --> E
-    E --> A
-    A --> T
-    T --> V
+    G[PvZ GOTY] <--> H[PvZ-AI-Harness v0.1.0]
+    H --> E[Environment v1: Observation 5534 / Action 541 / Reward v1]
+    E --> A[Gymnasium adapter + masks]
+    A --> P[SB3-Contrib MaskablePPO]
+    A --> B[Random / scripted baselines]
+    P --> T[Bounded training + checkpoints + manifests]
+    T --> V[Independent evaluation / Optuna / reward audit]
+    V --> D[Tk dashboard and curated per-level results]
 ```
 
-The Phase 4 repository must consume the harness through its public contracts rather than copying memory offsets, Win32 input code, focus logic, or placement rules.
+## Why MaskablePPO
 
-## Frozen upstream dependency
+The environment has a large discrete action space whose legal subset changes every step, and interaction with one real game is slow. sb3-contrib provides native masks during both learning and prediction, mature checkpointing, custom policy architectures, CPU/CUDA support, and local metrics. The full comparison and limitations are in [Phase 4.1 design](docs/PHASE_4_1_DESIGN.md).
 
-Initial development is pinned to:
-
-- Harness release: **v0.1.0**
-- GameState: **v1**
-- Observation: **v1**, shape `(5534,)`
-- Action: **v1**, `541` actions
-- Controller: **v1**
-- Environment: **v1**
-- Reward: **v1**
-- Transition JSONL schema: **v2**
-
-`src/pvz_deeplearning/harness.py` asserts this contract so an accidental incompatible harness upgrade fails loudly instead of silently invalidating an experiment.
+Available model IDs are `maskable_ppo_mlp_small` (`128,128`), `maskable_ppo_mlp_medium` (`256,256`), and `maskable_ppo_mlp_large` (`512,256,128`). Size is an experimental variable, not a quality ranking. New algorithms implement the backend protocol and register in `algorithms/registry.py`; no environment or result rewrite is needed.
 
 ## Setup
 
-Windows 10/11 and Python 3.12 are the current supported development target because live training depends on the Windows-only harness.
-
 ```powershell
-git clone https://github.com/b3d012/PvZ-DeepLearning.git
-cd PvZ-DeepLearning
 conda env create -f environment.yml
 conda activate pvz-rl
-python -m pip install -e .
-python scripts/check_harness.py
+python -m pip install -e .[tuning,tensorboard]
+pvz-dl doctor
 ```
 
-The project dependency installs `PvZ-AI-Harness` directly from the frozen `v0.1.0` Git tag. The game itself is not included; live experiments require the user's own legally obtained compatible PvZ GOTY installation.
+The harness dependency is pinned to immutable tag `v0.1.0`. Local editable harness development is allowed for development only; durable runs record both release and resolved commit.
 
-## Repository layout
-
-```text
-configs/                     Tracked experiment/model configuration
-src/pvz_deeplearning/        Phase 4 Python package
-  harness.py                 Frozen upstream contract gate
-  models/                    Future neural policy/value models
-  training/                  Future training pipelines
-  evaluation/                Evaluation and ablation code
-tests/                       Offline tests; must not interact with the desktop
-scripts/                     Developer/research entry points
-docs/                        Research plan and Phase 4 technical report
-results/README.md             Tracked result summaries only
-```
-
-Large generated artifacts are intentionally ignored: checkpoints, datasets, TensorBoard/W&B runs, Optuna databases, trajectories, raw logs, and generated result payloads.
-
-## Phase 4 roadmap
-
-The precise algorithm is intentionally **not locked yet**. A masked PPO-family baseline is a strong candidate, but algorithm selection should follow an explicit design comparison rather than being baked into repository structure.
-
-1. **Phase 4.0 — Research foundation**: pin and verify harness contract, reproducibility rules, CI, artifact policy. ✅
-2. **Phase 4.1 — RL interface & experimental protocol**: decide wrapper/API, timing, reset workflow, terminal handling strategy, evaluation protocol, and baseline candidates.
-3. **Phase 4.2 — First learned baseline**: implement one reproducible masked deep-RL baseline.
-4. **Phase 4.3 — Training infrastructure**: checkpoints, run manifests, recovery, metrics, deterministic seeds, and bounded live training.
-5. **Phase 4.4 — Hyperparameter tuning**: algorithm-specific search spaces and reproducible tuning studies.
-6. **Phase 4.5 — Evaluation & ablations**: compare learned policy against frozen random/scripted baselines and controlled variants.
-
-Any genuine harness deficiency discovered during Phase 4 should be fixed in `PvZ-AI-Harness`, released there as a new version, and then deliberately upgraded here. Do not patch around harness bugs inside model code.
-
-## Reproducibility contract
-
-Every durable training/evaluation run should eventually record at least:
-
-- algorithm and full hyperparameters;
-- random seed(s);
-- this repository's Git commit;
-- harness release and resolved harness commit;
-- Environment/Observation/Action/Reward/Transition schema versions;
-- level/episode configuration and active rows;
-- model architecture;
-- training budget/step timing;
-- device/software versions;
-- checkpoint identity;
-- evaluation results.
-
-This metadata should travel with checkpoints and published result summaries.
-
-## CI and tests
-
-The initial suite is deliberately offline and safe:
+## Commands
 
 ```powershell
-python -m compileall -q src tests scripts
-python -m unittest discover -s tests -p "test_*.py" -v
+pvz-dl doctor
+pvz-dl train --config configs/experiments/mock_smoke.yaml
+pvz-dl train --config configs/experiments/mock_smoke.yaml --resume artifacts/runs/PARENT/checkpoints/latest.zip
+pvz-dl evaluate --policy checkpoint --checkpoint artifacts/runs/RUN/checkpoints/latest.zip --episodes 10
+pvz-dl evaluate --policy random-valid --episodes 10
+pvz-dl audit-reward artifacts/runs/RUN/transitions/transitions.jsonl
+pvz-dl inspect artifacts/runs/RUN
+pvz-dl reproduce artifacts/runs/RUN
+pvz-dl tune --config configs/experiments/mock_smoke.yaml --trials 3
+pvz-dl tune-report --study maskable_ppo_mock --storage artifacts/tuning/study.db
+pvz-dl dashboard --run artifacts/runs/RUN
+tensorboard --logdir artifacts/runs/RUN/tensorboard
 ```
 
-CI installs the pinned harness and checks that its frozen public contract still matches the expectations of this repository. CI must never send live desktop input.
+`live_pilot.yaml` is deliberately fail-closed even with `--yes` until the upstream blockers are released and validated. No ordinary/offline command sends desktop input.
 
-## Relationship to the harness
+## Reproducibility and results
 
-For the game-integration implementation, documentation, monitor, live validation, and cumulative Phase 1–3.5 engineering report, see **[PvZ-AI-Harness](https://github.com/b3d012/PvZ-AI-Harness)**.
+Each ignored `artifacts/runs/<run-id>/` contains an immutable manifest, resolved YAML, checkpoints, JSONL metrics, evaluation, TensorBoard, and transitions. Manifests record Git/harness IDs, all schemas, level, architecture, hyperparameters, five software seed roles, uncontrolled game RNG, versions, device, timing, budget, and lineage. Raw checkpoints never enter Git. Curated real/pilot/mock classifications live in [results/RESULTS.md](results/RESULTS.md); there are currently no real learned-policy results.
 
-## License
+The proposed first live condition is Adventure 1-5 at normal speed and 250 ms decisions. Evaluation separates natural win/loss from horizon and technical truncations and reports distributions, not a best episode. See [research plan](docs/RESEARCH_PLAN.md) and [technical report](docs/technical-report.tex).
 
-GPL-3.0-only, matching the upstream harness. See `LICENSE`.
+## Limitations and roadmap
 
-Plants vs. Zombies is the property of its respective rights holders. This is an independent educational/research project and is not affiliated with or endorsed by PopCap or EA. No proprietary game files are distributed here.
+- No live process was present for this implementation pass; no attach, reset, pickup, model-action, reward, resume, evaluation, dashboard, or throughput result is claimed against the game.
+- Harness v0.1.0 adopts manually prepared boards but cannot autonomously start fresh episodes or authoritatively detect outcomes.
+- PvZ RNG is not controlled by recorded software seeds.
+- Action v1 has no shovel action; it remains intentionally deferred.
+- Structured neural encoders await versioned observation slice metadata; the MLP uses the frozen flat vector without mystery indexes.
+
+Next: implement and live-validate the smallest backward-compatible training-support release in the harness, pin that release here, run a bounded Adventure 1-5 pilot, then perform sequential tuning and multi-seed baseline comparisons.
