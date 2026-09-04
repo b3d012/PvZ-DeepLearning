@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pvz-deep-learning"
+version = "0.0.0"
+description = "Phase 4+ deep reinforcement learning research built on the frozen PvZ AI Harness."
+readme = "README.md"
+requires-python = ">=3.12"
+license = {text = "GPL-3.0-only"}
+authors = [{name = "b3d012"}]
+keywords = ["plants-vs-zombies", "deep-reinforcement-learning", "game-ai", "research"]
+classifiers = [
+    "Development Status :: 2 - Pre-Alpha",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "pvz-ai-harness @ git+https://github.com/b3d012/PvZ-AI-Harness.git@v0.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/b3d012/PvZ-DeepLearning"
+Repository = "https://github.com/b3d012/PvZ-DeepLearning"
+Harness = "https://github.com/b3d012/PvZ-AI-Harness"
+Issues = "https://github.com/b3d012/PvZ-DeepLearning/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["pvz_deeplearning*"]
