@@ -14,9 +14,9 @@ class ConfigTests(unittest.TestCase):
         self.assertEqual(load_model(ROOT / "configs/models/mlp_small.yaml").net_arch, (128, 128))
         self.assertEqual(load_experiment(ROOT / "configs/experiments/mock_smoke.yaml").mode, "mock")
 
-    def test_live_unsupported_capabilities_rejected(self):
+    def test_unknown_reset_strategy_rejected(self):
         with self.assertRaises(ValueError):
-            LevelProfile("x", 1, (True,) * 6, .25, 2, True, "operator_prepared", (), "r", "m")
+            LevelProfile("x", 1, (True,) * 6, .25, 2, True, "blind_clicks", (), "r", "m")
 
     def test_bad_yaml_shape_rejected(self):
         with tempfile.TemporaryDirectory() as folder:
