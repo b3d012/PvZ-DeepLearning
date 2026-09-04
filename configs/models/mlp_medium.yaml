@@ -1,0 +1,3 @@
+id: maskable_ppo_mlp_medium
+net_arch: [256, 256]
+activation_fn: tanh

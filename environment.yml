@@ -7,3 +7,4 @@ dependencies:
   - git
   - pip:
       - git+https://github.com/b3d012/PvZ-AI-Harness.git@v0.1.0
+      - -e .[tuning,tensorboard]

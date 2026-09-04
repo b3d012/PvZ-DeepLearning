@@ -28,6 +28,8 @@ Thumbs.db
 checkpoints/
 models/checkpoints/
 artifacts/
+artifacts/runs/
+artifacts/tuning/
 datasets/
 data/
 trajectories/
@@ -53,6 +55,12 @@ optuna*.db
 # Generated result payloads; keep curated summaries
 results/*
 !results/README.md
+!results/RESULTS.md
+!results/levels/
+!results/levels/**
+!results/RESULTS.md
+!results/levels/
+!results/levels/**
 
 # Temporary experiment outputs
 scratch/

@@ -1,0 +1,18 @@
+id: mock_smoke
+mode: mock
+algorithm: maskable_ppo
+level: adventure_1_5
+model: mlp_small
+seed: 42
+total_timesteps: 128
+checkpoint_interval: 64
+device: cpu
+max_episodes: 16
+max_wall_time_seconds: 120
+hyperparameters:
+  n_steps: 32
+  batch_size: 16
+  n_epochs: 2
+  learning_rate: 0.0003
+  gamma: 0.99
+  verbose: 0
