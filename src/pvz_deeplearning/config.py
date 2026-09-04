@@ -32,10 +32,8 @@ class LevelProfile:
             raise ValueError("step interval and episode limit must be positive")
         if self.training_speed != 1.0:
             raise ValueError("harness v0.1.0 only supports training_speed 1.0")
-        if self.auto_collect_pickups:
-            raise ValueError("harness v0.1.0 has no environment-managed pickup service")
-        if self.reset_strategy != "operator_prepared":
-            raise ValueError("harness v0.1.0 only supports operator_prepared reset")
+        if self.reset_strategy not in {"operator_prepared", "managed_current_level"}:
+            raise ValueError("reset_strategy must be operator_prepared or managed_current_level")
 
 
 @dataclass(frozen=True)

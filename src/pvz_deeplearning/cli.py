@@ -57,19 +57,40 @@ def command_doctor(_: argparse.Namespace) -> int:
         runtime.detach()
     except Exception as error:
         report["runtime"] = {"available": False, "error": f"{type(error).__name__}: {error}"}
-    report["live_training_blockers"] = ["authoritative_terminal_detection", "automatic_current_level_reset",
-        "environment_managed_pickup_collection"]
+    report["training_support_api_installed"] = False
+    try:
+        from pvz_runtime import GameOutcome, TrainingEpisodeSupport
+        report["training_support_api_installed"] = bool(GameOutcome and TrainingEpisodeSupport)
+    except ImportError:
+        pass
+    report["live_training_blockers"] = [
+        "immutable_v0.2.0_harness_release",
+        "live_won_and_lost_validation",
+        "live_validated_automatic_current_level_reset_driver",
+        "live_managed_pickup_validation",
+        "prepared_level_profile_validation",
+    ]
     _print(report)
     return 0 if report.get("contract_ok") else 1
 
 
 def command_train(args: argparse.Namespace) -> int:
     experiment, level, model_config = _resolve_config(args.config)
+    live_bundle = None
     if experiment.mode == "live":
         if not args.yes:
             raise SystemExit("live control requires --yes")
-        raise SystemExit("live multi-episode training is blocked: harness v0.1.0 has no authoritative reset/terminal/pickup service")
-    env = MockPvZEnv()
+        from pvz_deeplearning.live import build_live_environment
+        try:
+            live_bundle = build_live_environment(level)
+        except Exception as error:
+            from pvz_deeplearning.live import LiveEnvironmentError
+            if isinstance(error, LiveEnvironmentError):
+                raise SystemExit(str(error)) from None
+            raise
+        env = live_bundle.gym_environment
+    else:
+        env = MockPvZEnv()
     backend = get_backend(experiment.algorithm)
     parent_run_id = None
     if args.resume:
@@ -79,7 +100,8 @@ def command_train(args: argparse.Namespace) -> int:
         parent_run_id = parent["run_id"]
     manifest = new_manifest(repository=ROOT, level=level, experiment=experiment, model=model_config,
         parent_run_id=parent_run_id, starting_checkpoint=str(Path(args.resume).resolve()) if args.resume else None)
-    resolved = {"experiment": asdict(experiment), "level": asdict(level), "model": asdict(model_config), "mock": True}
+    resolved = {"experiment": asdict(experiment), "level": asdict(level),
+                "model": asdict(model_config), "mock": experiment.mode == "mock"}
     run = RunDirectory(args.output, manifest)
     run_path = run.create(resolved)
     _print({"run_id": manifest.run_id, "mode": experiment.mode, "level": level.id,
@@ -89,10 +111,25 @@ def command_train(args: argparse.Namespace) -> int:
     model = (backend.load(args.resume, environment=env, device=experiment.device) if args.resume else
         backend.build(env, model_config=model_config, seed=experiment.seed,
                       device=experiment.device, hyperparameters=experiment.hyperparameters))
-    checkpoint = train_model(backend, model, total_timesteps=experiment.total_timesteps, run_path=run_path,
-        checkpoint_interval=experiment.checkpoint_interval, max_episodes=experiment.max_episodes,
-        max_wall_seconds=experiment.max_wall_time_seconds, reset_num_timesteps=not bool(args.resume))
-    _print({"run_id": manifest.run_id, "checkpoint": str(checkpoint), "result_class": "MOCK"})
+    try:
+        checkpoint, completion_reason = train_model(
+            backend, model, total_timesteps=experiment.total_timesteps, run_path=run_path,
+            checkpoint_interval=experiment.checkpoint_interval, max_episodes=experiment.max_episodes,
+            max_wall_seconds=experiment.max_wall_time_seconds, reset_num_timesteps=not bool(args.resume),
+        )
+        run.complete(checkpoint, final_step=int(model.num_timesteps), completion_reason=completion_reason)
+    except Exception:
+        emergency = run_path / "checkpoints" / "latest.zip"
+        if emergency.exists() and not (run_path / "run_completion.json").exists():
+            run.complete(emergency, final_step=int(getattr(model, "num_timesteps", 0)),
+                         completion_reason="technical_failure")
+        raise
+    finally:
+        if live_bundle is not None:
+            live_bundle.close()
+    _print({"run_id": manifest.run_id, "checkpoint": str(checkpoint),
+            "completion_reason": completion_reason,
+            "result_class": "MOCK" if experiment.mode == "mock" else "LIVE"})
     return 0
 
 

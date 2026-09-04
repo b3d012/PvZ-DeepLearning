@@ -25,11 +25,13 @@ class PvZGymEnv(gym.Env[np.ndarray, int]):
         episode_factory: Callable[[], EpisodeConfig],
         *,
         prepare_reset: Callable[[EpisodeConfig], None] | None = None,
+        before_step: Callable[[], None] | None = None,
     ) -> None:
         super().__init__()
         self.environment = environment
         self.episode_factory = episode_factory
         self.prepare_reset = prepare_reset
+        self.before_step = before_step
         self.observation_space = gym.spaces.Box(
             low=-np.inf, high=np.inf, shape=OBSERVATION_SPEC.flat_shape, dtype=np.float32
         )
@@ -49,6 +51,8 @@ class PvZGymEnv(gym.Env[np.ndarray, int]):
         return result.observation.copy(), self._info(result.state, "reset", None)
 
     def step(self, action: int):
+        if self.before_step is not None:
+            self.before_step()
         result = self.environment.step(int(action))
         outcome = result.outcome
         assert outcome is not None

@@ -52,6 +52,20 @@ class RunManifest:
         return asdict(self)
 
 
+@dataclass(frozen=True)
+class RunCompletion:
+    schema_version: int
+    final_checkpoint: str
+    checkpoint_sha256: str
+    final_step: int
+    completion_reason: str
+    finished_at: str
+    evaluation_summary: str | None = None
+
+    def to_dict(self) -> dict[str, Any]:
+        return asdict(self)
+
+
 def git_state(path: str | Path) -> tuple[str, bool]:
     root = str(Path(path).resolve())
     sha = subprocess.run(["git", "rev-parse", "HEAD"], cwd=root, capture_output=True, text=True, check=True).stdout.strip()
@@ -114,6 +128,17 @@ class RunDirectory:
             json.dump(value, stream, indent=2, sort_keys=True)
             stream.write("\n")
         return target
+
+    def complete(self, checkpoint: str | Path, *, final_step: int,
+                 completion_reason: str, evaluation_summary: str | None = None) -> Path:
+        checkpoint = Path(checkpoint).resolve()
+        completion = RunCompletion(
+            schema_version=1, final_checkpoint=str(checkpoint),
+            checkpoint_sha256=checkpoint_sha256(checkpoint), final_step=int(final_step),
+            completion_reason=completion_reason, finished_at=datetime.now(UTC).isoformat(),
+            evaluation_summary=evaluation_summary,
+        )
+        return self.write_once("run_completion.json", completion.to_dict())
 
 
 def checkpoint_sha256(path: str | Path) -> str:
