@@ -1,0 +1,78 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Environments and secrets
+.venv/
+venv/
+env/
+.env
+.env.*
+!.env.example
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ML / RL generated artifacts
+checkpoints/
+models/checkpoints/
+artifacts/
+datasets/
+data/
+trajectories/
+logs/
+runs/
+wandb/
+tensorboard/
+lightning_logs/
+mlruns/
+optuna*.db
+*.sqlite
+*.sqlite3
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.safetensors
+*.npy
+*.npz
+*.pkl
+*.pickle
+
+# Generated result payloads; keep curated summaries
+results/*
+!results/README.md
+
+# Temporary experiment outputs
+scratch/
+tmp/
+temp/
+
+# LaTeX build products
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+
+# Proprietary game content must never be committed
+PlantsVsZombies.exe
+game/
+base_game/

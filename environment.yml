@@ -1,0 +1,9 @@
+name: pvz-rl
+channels:
+  - conda-forge
+dependencies:
+  - python=3.12
+  - pip
+  - git
+  - pip:
+      - git+https://github.com/b3d012/PvZ-AI-Harness.git@v0.1.0

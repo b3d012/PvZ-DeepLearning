@@ -1,0 +1,79 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{parskip}
+\usepackage{amsmath}
+\title{\textbf{Plants vs. Zombies Deep Learning}\\\large Phase 4 Research Report}
+\author{b3d012}
+\date{4 September 2026}
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This report begins the machine-learning phase of the Plants vs. Zombies project. Phases 1--3.5 were separated into the reusable \texttt{PvZ-AI-Harness} project and frozen at release v0.1.0. The present repository focuses only on learned-agent research: interface design, algorithm selection, training, tuning, evaluation, and ablation studies. This document intentionally starts before a specific deep-reinforcement-learning algorithm is selected so that the experimental protocol can be defined independently of one implementation.
+\end{abstract}
+
+\section{Relationship to the PvZ AI Harness}
+The upstream harness targets Plants vs. Zombies GOTY 1.2.0.1073 on Windows and provides read-only GameState v1, Observation v1, Action v1 with deterministic masking, Controller v1, Environment v1, Reward v1, transition schema v2, baseline policies, and runtime/session safety. The engineering history and validation of those components are documented in the harness repository's cumulative technical development report.
+
+Phase 4 consumes that release as a dependency rather than copying its implementation. The initial dependency is pinned to \texttt{PvZ-AI-Harness v0.1.0}. A local compatibility gate verifies the expected environment contract before experiments proceed.
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Contract & Initial Phase 4 value \\
+\midrule
+Harness release & v0.1.0 \\
+Observation & schema v1, shape $(5534,)$ \\
+Action & schema v1, 541 actions \\
+Environment & schema v1 \\
+Reward & schema v1 \\
+Transition log & schema v2 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section{Phase 4 Objective}
+The objective is to determine whether a learned policy can develop useful Plants vs. Zombies strategy from the frozen structured observation/action interface and outperform transparent random-valid and scripted baselines under a reproducible protocol. The model should learn strategy rather than deterministic placement legality or Windows-control mechanics already solved by the harness.
+
+\section{Experimental Principles}
+\begin{itemize}
+\item Keep the harness fixed within an experiment series.
+\item Separate technical runtime interruptions from game outcomes.
+\item Record exact Git commits, harness release, schema versions, seeds, hyperparameters, model architecture, timing, and evaluation conditions.
+\item Prefer multiple seeds and uncertainty reporting over a single best run.
+\item Keep training, evaluation, and hyperparameter selection logically separate.
+\item Do not introduce reward terms solely because a metric is convenient to optimize.
+\item Preserve raw run manifests and immutable checkpoint provenance outside the source repository when artifacts become large.
+\end{itemize}
+
+\section{Phase 4.1: RL Interface and Protocol}
+Before implementing the first learned baseline, Phase 4.1 will compare practical ways to adapt Environment v1 to a mature RL library, especially the requirements imposed by the 541-action discrete space and invalid-action mask. It will also specify the first target level, active rows, decision interval, reset procedure, truncation semantics, evaluation seeds, baseline comparisons, metrics, and checkpoint/run-manifest format.
+
+A maskable PPO-family method is a strong candidate because the action mask is already deterministic and the observation is fixed-size. It is not yet treated as a final architectural decision. Candidate algorithms should be compared on compatibility, sample efficiency, stability under relatively expensive real-time interaction, reproducibility, Windows support, and implementation maturity.
+
+\section{Planned Research Sequence}
+\begin{enumerate}
+\item Phase 4.1: RL-facing adapter and experimental protocol.
+\item Phase 4.2: first reproducible learned baseline.
+\item Phase 4.3: checkpointing, run manifests, recovery, and training metrics.
+\item Phase 4.4: algorithm-specific hyperparameter tuning.
+\item Phase 4.5: evaluation, ablations, and comparison with frozen baselines.
+\end{enumerate}
+
+\section{Reproducibility Record}
+Every durable run should record the Phase 4 Git SHA, resolved harness release/SHA, complete environment contract, algorithm/library versions, model architecture, hyperparameters, random seeds, level/episode configuration, reward specification, timing, training budget, hardware/device information, checkpoint identity, and evaluation results.
+
+\section{Known Initial Constraints}
+The harness currently requires a manually prepared level start, explicit active rows for levels with inactive lanes, and an authoritative injected terminal detector for natural win/loss. The project therefore must distinguish true environment outcomes from configured truncations and technical runtime interruptions. Automated menu navigation and Adventure progression are outside the initial Phase 4 scope.
+
+\section{Next Work}
+The next work is the Phase 4.1 design study. No model implementation should be considered canonical until that study defines the adapter, evaluation protocol, and algorithm-selection rationale.
+
+\end{document}
