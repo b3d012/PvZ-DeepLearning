@@ -35,6 +35,29 @@ class FakeRuntime:
     def close(self): self.closed = True
 
 
+class FakeTrainingEpisodeSupport:
+    def __init__(self, runtime, **kwargs):
+        self.runtime = runtime
+        self.pickups = SimpleNamespace(enabled=kwargs["auto_collect_pickups"],
+            collect_once=lambda: None, shutdown=lambda: None)
+
+    def shutdown(self): self.pickups.shutdown()
+
+
+class FakeResetExpectation:
+    def __init__(self, adventure_level, seed_types):
+        self.adventure_level = adventure_level
+        self.seed_types = seed_types
+
+
+FAKE_TRAINING_API = SimpleNamespace(
+    PvZRuntime=FakeRuntime,
+    ResetExpectation=FakeResetExpectation,
+    ResetStatus=SimpleNamespace(NOT_ATTACHED="not_attached", UNHEALTHY="unhealthy"),
+    TrainingEpisodeSupport=FakeTrainingEpisodeSupport,
+)
+
+
 class LiveFactoryTests(unittest.TestCase):
     def test_release_gate_prevents_live_construction(self):
         with self.assertRaisesRegex(LiveEnvironmentError, "immutable harness"):
@@ -49,7 +72,7 @@ class LiveFactoryTests(unittest.TestCase):
     def test_factory_composes_public_harness_seams_under_test_bypass(self):
         runtime = FakeRuntime(game_state())
         bundle = build_live_environment(profile(), runtime_factory=lambda: runtime,
-            allow_unreleased_for_tests=True)
+            allow_unreleased_for_tests=True, training_api=FAKE_TRAINING_API)
         self.assertIs(bundle.runtime, runtime)
         self.assertTrue(bundle.episode_support.pickups.enabled)
         bundle.close()

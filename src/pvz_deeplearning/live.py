@@ -97,6 +97,7 @@ def build_live_environment(
     runtime_factory: Callable[[], Any] | None = None,
     restart_driver: Any | None = None,
     allow_unreleased_for_tests: bool = False,
+    training_api: Any | None = None,
 ) -> LiveEnvironmentBundle:
     """Construct the real backend; no input occurs until Gym reset/step.
 
@@ -111,7 +112,13 @@ def build_live_environment(
     if level.reset_strategy != "managed_current_level" or not level.auto_collect_pickups:
         raise LiveEnvironmentError("live profile must enable managed_current_level reset and pickups")
     assert_supported_harness_contract()
-    from pvz_runtime import PvZRuntime, ResetExpectation, ResetStatus, TrainingEpisodeSupport
+    if training_api is None:
+        from pvz_runtime import PvZRuntime, ResetExpectation, ResetStatus, TrainingEpisodeSupport
+    else:
+        PvZRuntime = training_api.PvZRuntime
+        ResetExpectation = training_api.ResetExpectation
+        ResetStatus = training_api.ResetStatus
+        TrainingEpisodeSupport = training_api.TrainingEpisodeSupport
 
     runtime = runtime_factory() if runtime_factory else PvZRuntime()
     runtime.attach()
