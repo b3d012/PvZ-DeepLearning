@@ -1,19 +1,13 @@
-# Experiment configuration
+# Tracked configuration
 
-Tracked model/training/evaluation configuration belongs here once Phase 4.1 chooses the configuration format and first learned baseline.
+- `algorithms/`: library identity and invariant mask behavior.
+- `models/`: neural architecture templates.
+- `levels/`: controlled live conditions and capability constraints.
+- `experiments/`: budgets, seeds, backend, device, and hyperparameters.
 
-Keep algorithm-specific settings separate. A future structure may look like:
+Templates are versioned inputs. Every run writes a resolved immutable copy; never edit a completed run manifest to match remembered settings.
 
-```text
-configs/
-  algorithms/
-    maskable_ppo.yaml
-    ...
-  experiments/
-    level_1_1_baseline.yaml
-    ...
-```
-
-Do not place harness runtime/focus/memory configuration here unless it is genuinely an experiment-level parameter exposed by the harness public API.
-
-Every durable config should be immutable after the run begins or copied into that run's manifest so historical experiments remain reproducible.
+`adventure_1_4.yaml` is the unreleased live candidate and intentionally requests
+managed reset/pickups; the release gate prevents it from running with v0.1.0.
+`adventure_1_5.yaml` is retained for provenance but is not the first RL target:
+1-5 is Wall-nut Bowling rather than a regular placement/economy level.
