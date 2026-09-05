@@ -19,6 +19,10 @@ class EvaluationEpisode:
     technical_truncation: bool
     waves_reached: int
     wall_seconds: float
+    actions: int
+    won: bool
+    lost: bool
+    completion_reason: str | None
 
 
 def evaluate_masked(env: Any, select_action: Callable[[Any, Any], int], episodes: int, seed: int = 0) -> tuple[list[EvaluationEpisode], dict[str, Any]]:
@@ -37,8 +41,13 @@ def evaluate_masked(env: Any, select_action: Callable[[Any, Any], int], episodes
             length += 1
             wave = max(wave, int(info.get("wave") or 0))
             if terminated or truncated:
-                records.append(EvaluationEpisode(episode, total, length, terminated, truncated,
-                    bool(info.get("technical_truncation")), wave, time.monotonic() - started))
+                reason = info.get("outcome_reason")
+                records.append(EvaluationEpisode(
+                    episode, total, length, terminated, truncated,
+                    bool(info.get("technical_truncation")), wave,
+                    time.monotonic() - started, length, reason == "win",
+                    reason == "loss", reason,
+                ))
                 break
     returns = [x.episode_return for x in records]
     natural = [x for x in records if not x.technical_truncation]
@@ -52,6 +61,8 @@ def evaluate_masked(env: Any, select_action: Callable[[Any, Any], int], episodes
         "technical_truncations": sum(x.technical_truncation for x in records),
         "technical_truncation_rate": sum(x.technical_truncation for x in records) / len(records),
         "termination_rate": sum(x.terminated for x in natural) / len(natural) if natural else None,
+        "wins": sum(x.won for x in records), "losses": sum(x.lost for x in records),
+        "win_rate": sum(x.won for x in natural) / len(natural) if natural else None,
         "mock": bool(getattr(env, "__class__", type(env)).__name__.startswith("Mock")),
     }
     return records, summary

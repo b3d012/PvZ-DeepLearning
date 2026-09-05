@@ -136,21 +136,43 @@ def command_train(args: argparse.Namespace) -> int:
 
 
 def command_evaluate(args: argparse.Namespace) -> int:
-    env = MockPvZEnv()
-    if args.policy in {"random-valid", "scripted-heuristic"}:
-        select = HarnessBaselineSelector(args.policy, env, args.seed)
+    live_bundle = None
+    if args.config:
+        experiment, level, _model_config = _resolve_config(args.config)
+        if experiment.mode == "live":
+            if not args.yes:
+                raise SystemExit("live evaluation requires --yes")
+            from pvz_deeplearning.live import build_live_environment
+            live_bundle = build_live_environment(level)
+            env = live_bundle.gym_environment
+        else:
+            env = MockPvZEnv()
     else:
-        backend = get_backend("maskable_ppo")
-        model = backend.load(args.checkpoint, environment=env, device=args.device)
-        select = lambda obs, mask: backend.predict(model, obs, mask, deterministic=True)
-    records, summary = evaluate_masked(env, select, args.episodes, args.seed)
-    payload = serializable_evaluation(records, summary)
-    if args.output:
-        target = Path(args.output)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
-    _print(payload)
-    return 0
+        env = MockPvZEnv()
+    try:
+        if args.policy in {"random-valid", "scripted-heuristic"}:
+            select = HarnessBaselineSelector(args.policy, env, args.seed)
+        else:
+            if not args.checkpoint:
+                raise SystemExit("--checkpoint is required for checkpoint evaluation")
+            backend = get_backend("maskable_ppo")
+            model = backend.load(args.checkpoint, environment=env, device=args.device)
+            select = lambda obs, mask: backend.predict(model, obs, mask, deterministic=True)
+        records, summary = evaluate_masked(env, select, args.episodes, args.seed)
+        payload = serializable_evaluation(records, summary)
+        payload["result_class"] = "LIVE" if live_bundle is not None else "MOCK"
+        target = Path(args.output) if args.output else None
+        if target is None and live_bundle is not None:
+            target = Path("artifacts") / "evaluations" / f"{args.policy}-live.json"
+        if target:
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+            payload["output"] = str(target)
+        _print(payload)
+        return 0
+    finally:
+        if live_bundle is not None:
+            live_bundle.close()
 
 
 def command_inspect(args: argparse.Namespace) -> int:
@@ -187,7 +209,7 @@ def command_dashboard(args: argparse.Namespace) -> int:
 def command_tune(args: argparse.Namespace) -> int:
     experiment, _level, model_config = _resolve_config(args.config)
     if experiment.mode != "mock":
-        raise SystemExit("live tuning is blocked with harness v0.1.0")
+        raise SystemExit("live tuning requires a validated real training/evaluation pilot")
     backend = get_backend(experiment.algorithm)
     def objective(trial: Any) -> float:
         env = MockPvZEnv(8)
@@ -231,10 +253,12 @@ def build_parser() -> argparse.ArgumentParser:
     train.add_argument("--resume", help="explicit checkpoint to resume into a new lineage run")
     train.add_argument("--yes", action="store_true", help="explicitly authorize live gameplay control")
     train.set_defaults(func=command_train)
-    evaluate = sub.add_parser("evaluate", help="independent masked evaluation (mock until live blockers resolve)")
+    evaluate = sub.add_parser("evaluate", help="independent masked evaluation; live mode requires --config and --yes")
     evaluate.add_argument("--policy", choices=("random-valid", "scripted-heuristic", "checkpoint"), default="checkpoint")
     evaluate.add_argument("--checkpoint"); evaluate.add_argument("--episodes", type=int, default=5)
     evaluate.add_argument("--seed", type=int, default=0); evaluate.add_argument("--device", default="auto")
+    evaluate.add_argument("--config", help="tracked mock or live experiment configuration")
+    evaluate.add_argument("--yes", action="store_true", help="explicitly authorize live evaluation control")
     evaluate.add_argument("--output"); evaluate.set_defaults(func=command_evaluate)
     inspect = sub.add_parser("inspect"); inspect.add_argument("run"); inspect.set_defaults(func=command_inspect)
     reproduce = sub.add_parser("reproduce"); reproduce.add_argument("run"); reproduce.set_defaults(func=command_reproduce)

@@ -9,7 +9,7 @@ An auditable deep-reinforcement-learning research stack for the real Plants vs. 
 
 ```mermaid
 flowchart TD
-    G[PvZ GOTY] <--> H[PvZ-AI-Harness v0.1.0]
+    G[PvZ GOTY] <--> H[PvZ-AI-Harness v0.2.0]
     H --> E[Environment v1: Observation 5534 / Action 541 / Reward v1]
     E --> A[Gymnasium adapter + masks]
     A --> P[SB3-Contrib MaskablePPO]
@@ -64,9 +64,13 @@ The first live candidate is Adventure 1-7: a normal daytime five-lane lawn, fixe
 ## Limitations and roadmap
 
 - A read-only check observed a real paused Adventure level 7 Board and the candidate outcome evidence mapped it to `RUNNING`; no WON/LOST, reset, pickup, model-action, reward, resume, evaluation, or throughput result is claimed.
-- Harness v0.1.0 remains the durable pin. Candidate lifecycle APIs are not a release, and no automatic restart driver has passed live validation.
+- Harness v0.2.0 is the durable immutable pin. Its lifecycle support is live
+  validated: terminal outcomes, active/pause-menu/loss/win same-level reset,
+  managed pickup collection, and runtime serialization.
 - PvZ RNG is not controlled by recorded software seeds.
 - Action v1 has no shovel action; it remains intentionally deferred.
 - Structured neural encoders await versioned observation slice metadata; the MLP uses the frozen flat vector without mystery indexes.
 
-Next: complete the ordered live protocol, implement/validate the automatic current-level restart driver, publish the harness release, pin it here, and run a bounded Adventure 1-4 pilot before tuning or multi-seed comparisons.
+Next: run bounded random-valid, scripted, and MaskablePPO Adventure 1-7 pilots
+after the live level preflight succeeds; only then consider checkpoint resume,
+evaluation, throughput measurement, and tiny tuning plumbing.

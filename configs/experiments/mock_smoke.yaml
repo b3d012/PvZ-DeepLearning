@@ -1,7 +1,7 @@
 id: mock_smoke
 mode: mock
 algorithm: maskable_ppo
-level: adventure_1_5
+level: adventure_1_7
 model: mlp_small
 seed: 42
 total_timesteps: 128

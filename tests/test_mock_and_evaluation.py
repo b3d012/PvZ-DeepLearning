@@ -20,3 +20,5 @@ class MockEvaluationTests(unittest.TestCase):
         records, summary = evaluate_masked(env, lambda _o, _m: 0, 3, seed=9)
         self.assertEqual(len(records), 3); self.assertEqual(summary["episodes"], 3)
         self.assertTrue(summary["mock"]); self.assertEqual(summary["technical_truncations"], 0)
+        self.assertEqual(records[0].actions, records[0].length)
+        self.assertEqual(summary["wins"], 0)
