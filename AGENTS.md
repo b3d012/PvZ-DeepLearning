@@ -8,7 +8,7 @@ Read this before substantial changes.
 
 - Repository: `b3d012/PvZ-DeepLearning`
 - Upstream harness: `b3d012/PvZ-AI-Harness`
-- Harness pin: **v0.2.0** (`1fb399f2873b6c36f26269385a751389a4ab95bf`)
+- Harness pin: **v0.2.1** (`7f0b71049362b0efe4171b937f47a8acc1d6d1ef`)
 - Current milestone: **Phase 4 live integration enabled; bounded pilots remain pending**
 - Target game/harness platform: **Plants vs. Zombies GOTY 1.2.0.1073 on Windows**
 

@@ -64,7 +64,7 @@ def command_doctor(_: argparse.Namespace) -> int:
     except ImportError:
         pass
     report["live_training_capabilities"] = {
-        "immutable_harness_release": HARNESS_RELEASE == "v0.2.0",
+        "immutable_harness_release": HARNESS_RELEASE == "v0.2.1",
         "training_support_api": report["training_support_api_installed"],
         "required_preflight": [
             "supported_process_window_board",
