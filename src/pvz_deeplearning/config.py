@@ -31,7 +31,7 @@ class LevelProfile:
         if self.step_interval_seconds <= 0 or self.max_episode_steps <= 0:
             raise ValueError("step interval and episode limit must be positive")
         if self.training_speed != 1.0:
-            raise ValueError("harness v0.1.0 only supports training_speed 1.0")
+            raise ValueError("the validated Adventure 1-7 profile requires training_speed 1.0")
         if self.reset_strategy not in {"operator_prepared", "managed_current_level"}:
             raise ValueError("reset_strategy must be operator_prepared or managed_current_level")
 
