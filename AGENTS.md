@@ -17,7 +17,7 @@ The Phase 1–3.5 game-integration stack is not implemented here. It is frozen a
 ```text
 PvZ GOTY
    ↕
-PvZ-AI-Harness v0.1.0
+PvZ-AI-Harness v0.2.0
    ↓
 Environment v1
    ↓
