@@ -9,7 +9,7 @@ from pvz_deeplearning.live import (
 
 
 def profile(**changes):
-    values = dict(id="level", adventure_level=5, active_rows=(True,) * 5 + (False,),
+    values = dict(id="level", adventure_level=7, active_rows=(True,) * 5 + (False,),
         step_interval_seconds=.25, max_episode_steps=10, auto_collect_pickups=True,
         reset_strategy="managed_current_level", expected_seed_types=("Peashooter", "Sunflower"),
         reward_profile="harness_reward_v1", evaluation_metric="waves")
@@ -17,7 +17,7 @@ def profile(**changes):
     return LevelProfile(**values)
 
 
-def game_state(level=5, seeds=(0, 1)):
+def game_state(level=7, seeds=(0, 1)):
     return SimpleNamespace(adventure_level=level, paused=False,
         seeds=[SimpleNamespace(type_id=x) for x in seeds])
 
@@ -59,20 +59,16 @@ FAKE_TRAINING_API = SimpleNamespace(
 
 
 class LiveFactoryTests(unittest.TestCase):
-    def test_release_gate_prevents_live_construction(self):
-        with self.assertRaisesRegex(LiveEnvironmentError, "immutable harness"):
-            build_live_environment(profile(), runtime_factory=lambda: self.fail("must not attach"))
-
     def test_level_and_seed_mismatch_refuse(self):
         with self.assertRaisesRegex(LiveEnvironmentError, "configured level"):
             validate_level_profile(game_state(level=6), profile())
         with self.assertRaisesRegex(LiveEnvironmentError, "configured seeds"):
             validate_level_profile(game_state(seeds=(0,)), profile())
 
-    def test_factory_composes_public_harness_seams_under_test_bypass(self):
+    def test_factory_composes_public_harness_seams(self):
         runtime = FakeRuntime(game_state())
         bundle = build_live_environment(profile(), runtime_factory=lambda: runtime,
-            allow_unreleased_for_tests=True, training_api=FAKE_TRAINING_API)
+            training_api=FAKE_TRAINING_API)
         self.assertIs(bundle.runtime, runtime)
         self.assertTrue(bundle.episode_support.pickups.enabled)
         bundle.close()

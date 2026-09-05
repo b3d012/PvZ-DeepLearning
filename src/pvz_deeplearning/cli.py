@@ -63,13 +63,15 @@ def command_doctor(_: argparse.Namespace) -> int:
         report["training_support_api_installed"] = bool(GameOutcome and TrainingEpisodeSupport)
     except ImportError:
         pass
-    report["live_training_blockers"] = [
-        "immutable_v0.2.0_harness_release",
-        "live_won_and_lost_validation",
-        "live_validated_automatic_current_level_reset_driver",
-        "live_managed_pickup_validation",
-        "prepared_level_profile_validation",
-    ]
+    report["live_training_capabilities"] = {
+        "immutable_harness_release": HARNESS_RELEASE == "v0.2.0",
+        "training_support_api": report["training_support_api_installed"],
+        "required_preflight": [
+            "supported_process_window_board",
+            "adventure_1_7_profile_and_seed_bank",
+            "unpaused_or_explicitly_attested_normal_menu",
+        ],
+    }
     _print(report)
     return 0 if report.get("contract_ok") else 1
 

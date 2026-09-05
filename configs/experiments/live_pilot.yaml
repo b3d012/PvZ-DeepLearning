@@ -1,13 +1,13 @@
 id: live_pilot
 mode: live
 algorithm: maskable_ppo
-level: adventure_1_4
+level: adventure_1_7
 model: mlp_small
 seed: 42
-total_timesteps: 2048
+total_timesteps: 512
 checkpoint_interval: 256
 device: auto
-max_episodes: 4
+max_episodes: 3
 max_wall_time_seconds: 3600
 hyperparameters:
   n_steps: 128

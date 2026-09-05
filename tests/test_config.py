@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 class ConfigTests(unittest.TestCase):
     def test_tracked_configs_validate(self):
-        self.assertEqual(load_level(ROOT / "configs/levels/adventure_1_5.yaml").adventure_level, 5)
+        self.assertEqual(load_level(ROOT / "configs/levels/adventure_1_7.yaml").adventure_level, 7)
         self.assertEqual(load_model(ROOT / "configs/models/mlp_small.yaml").net_arch, (128, 128))
         self.assertEqual(load_experiment(ROOT / "configs/experiments/mock_smoke.yaml").mode, "mock")
 

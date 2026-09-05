@@ -1,6 +1,6 @@
 # PvZ Deep Learning
 
-An auditable deep-reinforcement-learning research stack for the real Plants vs. Zombies GOTY 1.2.0.1073 client, built strictly above [PvZ AI Harness v0.1.0](https://github.com/b3d012/PvZ-AI-Harness).
+An auditable deep-reinforcement-learning research stack for the real Plants vs. Zombies GOTY 1.2.0.1073 client, built strictly above [PvZ AI Harness v0.2.0](https://github.com/b3d012/PvZ-AI-Harness/releases/tag/v0.2.0).
 
 > **Status:** Phase 4 offline implementation is complete and its live factory
 > is release-gated. The harness training-lifecycle candidate is pushed but not
@@ -34,7 +34,7 @@ python -m pip install -e .[tuning,tensorboard]
 pvz-dl doctor
 ```
 
-The harness dependency is pinned to immutable tag `v0.1.0`. Local editable harness development is allowed for development only; durable runs record both release and resolved commit.
+The harness dependency is pinned to immutable tag `v0.2.0` at resolved commit `1fb399f2873b6c36f26269385a751389a4ab95bf`. Local editable harness development is allowed for development only; durable runs record both release and resolved commit.
 
 ## Commands
 
@@ -59,7 +59,7 @@ tensorboard --logdir artifacts/runs/RUN/tensorboard
 
 Each ignored `artifacts/runs/<run-id>/` contains an immutable manifest, resolved YAML, checkpoints, JSONL metrics, evaluation, TensorBoard, and transitions. Manifests record Git/harness IDs, all schemas, level, architecture, hyperparameters, five software seed roles, uncontrolled game RNG, versions, device, timing, budget, and lineage. A separate immutable `run_completion.json` records final checkpoint path/SHA256, step, completion reason, finish time, and optional evaluation reference. Raw checkpoints never enter Git. Curated real/pilot/mock classifications live in [results/RESULTS.md](results/RESULTS.md); there are currently no real learned-policy results.
 
-The first live candidate is Adventure 1-4 at normal speed and 250 ms decisions. It replaces 1-5 because 1-5 is Wall-nut Bowling rather than the intended Sunflower/Peashooter economy problem. The exact GOTY seed bank and repeatability remain live-validation items. Evaluation separates natural win/loss from horizon and technical truncations and reports distributions, not a best episode. See [research plan](docs/RESEARCH_PLAN.md) and [technical report](docs/technical-report.tex).
+The first live candidate is Adventure 1-7: a normal daytime five-lane lawn, fixed six-packet seed bank, 1x speed, and 250 ms strategic decisions. It is prepared normally and verified through memory because forced earlier levels were unstable on the target installation. Evaluation separates natural win/loss from horizon and technical truncations and reports distributions, not a best episode. See [research plan](docs/RESEARCH_PLAN.md) and [technical report](docs/technical-report.tex).
 
 ## Limitations and roadmap
 

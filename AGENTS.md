@@ -8,8 +8,8 @@ Read this before substantial changes.
 
 - Repository: `b3d012/PvZ-DeepLearning`
 - Upstream harness: `b3d012/PvZ-AI-Harness`
-- Initial harness pin: **v0.1.0**
-- Current milestone: **Phase 4 offline learning stack implemented; live training support blocked upstream**
+- Harness pin: **v0.2.0** (`1fb399f2873b6c36f26269385a751389a4ab95bf`)
+- Current milestone: **Phase 4 live integration enabled; bounded pilots remain pending**
 - Target game/harness platform: **Plants vs. Zombies GOTY 1.2.0.1073 on Windows**
 
 The Phase 1–3.5 game-integration stack is not implemented here. It is frozen and versioned in `PvZ-AI-Harness`.
@@ -56,7 +56,7 @@ Do not silently depend on harness `main`. Durable experiments use an explicit re
 
 `src/pvz_deeplearning/harness.py` is the compatibility gate. Initial expectations are:
 
-- harness release `v0.1.0`;
+- harness release `v0.2.0`;
 - Observation schema v1, shape `(5534,)`;
 - Action schema v1, 541 actions;
 - Environment schema v1;
@@ -200,12 +200,15 @@ The Phase 1–3.5 technical history remains in the harness repository and should
 
 ## Current handoff state
 
-- `PvZ-AI-Harness` v0.1.0 is the frozen upstream foundation.
+- `PvZ-AI-Harness` v0.2.0 is the immutable upstream foundation.
 - This repository has been separated specifically for Phase 4+ learning research.
 - Gymnasium 1.2.2, Stable-Baselines3/sb3-contrib 2.9.0, and MaskablePPO are selected.
 - `adapters/` owns Gym semantics; `algorithms/` owns backend integrations; `models` are tracked YAML architecture templates; `training/` owns bounded learning/checkpoint callbacks; `evaluation/` never shares training decisions; `tuning.py` owns sequential studies.
 - Generated run truth lives under ignored `artifacts/runs/<run-id>/`; tracked conclusions live under `results/levels/` and `results/RESULTS.md`.
 - Never edit a completed manifest, silently resume a checkpoint, change reward semantics without a new profile/version, mix tuning and held-out evaluation episodes, or describe mock output as live.
 - The dashboard is a frontend to public harness/run APIs. It must not own Windows input, runtime safety, action threads, or mutable canonical configuration.
-- Harness v0.1.0 remains the durable pin. A feature-branch candidate supplies outcome/reset-verification/pickup APIs, but no automatic reset driver or immutable release exists. Live commands must keep failing closed until validation, release, and deliberate pin upgrade.
-- Adventure 1-4 replaces 1-5 as the candidate because 1-5 is Wall-nut Bowling. The next subphase is the ordered lifecycle validation and automatic reset driver, followed by a bounded 1-4 pilot; do not claim Phase 4 completion before both.
+- Harness v0.2.0 supplies validated outcome/reset/pickup APIs. `mLevelAwardSpawned`
+  is authoritative for reward-pending live Board wins; BoardResult alone is not.
+  Unknown paused modals fail closed and reset postconditions remain authoritative.
+- Adventure 1-7 is the normal daytime controlled condition. Earlier forced-level
+  selection was unstable on the target installation; do not return to 1-4/1-5.

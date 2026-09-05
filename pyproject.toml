@@ -19,7 +19,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
 ]
 dependencies = [
-    "pvz-ai-harness @ git+https://github.com/b3d012/PvZ-AI-Harness.git@v0.1.0",
+    "pvz-ai-harness @ git+https://github.com/b3d012/PvZ-AI-Harness.git@v0.2.0",
     "gymnasium==1.2.2",
     "numpy>=2.0,<3",
     "PyYAML==6.0.2",

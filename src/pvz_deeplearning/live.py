@@ -101,8 +101,7 @@ def build_live_environment(
 ) -> LiveEnvironmentBundle:
     """Construct the real backend; no input occurs until Gym reset/step.
 
-    The test-only bypass is intentionally not exposed by the CLI. Durable live
-    runs require the immutable training-support release pin.
+    Durable live runs require the immutable training-support release pin.
     """
     if HARNESS_RELEASE != TRAINING_SUPPORT_RELEASE and not allow_unreleased_for_tests:
         raise LiveEnvironmentError(
@@ -113,20 +112,27 @@ def build_live_environment(
         raise LiveEnvironmentError("live profile must enable managed_current_level reset and pickups")
     assert_supported_harness_contract()
     if training_api is None:
-        from pvz_runtime import PvZRuntime, ResetExpectation, ResetStatus, TrainingEpisodeSupport
+        from pvz_runtime import (
+            FocusMode, NormalUiRestartDriver, PvZRuntime, ResetExpectation,
+            ResetStatus, RuntimeConfig, TrainingEpisodeSupport,
+        )
     else:
         PvZRuntime = training_api.PvZRuntime
         ResetExpectation = training_api.ResetExpectation
         ResetStatus = training_api.ResetStatus
         TrainingEpisodeSupport = training_api.TrainingEpisodeSupport
 
-    runtime = runtime_factory() if runtime_factory else PvZRuntime()
+    runtime = runtime_factory() if runtime_factory else PvZRuntime(
+        config=RuntimeConfig(focus_mode=FocusMode.AUTO)
+    )
     runtime.attach()
     state = runtime.observe()
     if state is None or not runtime.health.can_observe:
         runtime.close()
         raise LiveEnvironmentError("runtime cannot observe a prepared Board")
     validate_level_profile(state, level)
+    if restart_driver is None and training_api is None:
+        restart_driver = NormalUiRestartDriver()
     support = TrainingEpisodeSupport(runtime, restart_driver=restart_driver, auto_collect_pickups=True)
     detector = RuntimeOutcomeDetector(support)
     expectation = ResetExpectation(level.adventure_level, _seed_ids(level.expected_seed_types))
