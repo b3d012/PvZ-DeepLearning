@@ -15,3 +15,8 @@
 - Added structured runtime/board/agent/evaluation dashboard models.
 - Replaced the proposed 1-5 live condition with regular daytime Adventure 1-4;
   1-5 is Wall-nut Bowling. No new live performance result is claimed.
+- Pinned the immutable released PvZ AI Harness v0.2.0
+  (`1fb399f2873b6c36f26269385a751389a4ab95bf`), enabled its public automatic
+  lifecycle service in the production factory, and selected Adventure 1-7.
+- Recorded a level-7 read-only production preflight that correctly refused an
+  unknown paused modal before any desktop input or experiment artifact.
