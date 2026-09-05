@@ -12,7 +12,7 @@ from pvz_deeplearning.harness import (
 
 class HarnessContractTests(unittest.TestCase):
     def test_release_pin_is_explicit(self):
-        self.assertEqual(HARNESS_RELEASE, "v0.2.0")
+        self.assertEqual(HARNESS_RELEASE, "v0.2.1")
 
     def test_installed_harness_matches_expected_contract(self):
         self.assertEqual(harness_contract(), EXPECTED_HARNESS_CONTRACT)

@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import Enum
 from typing import Any, Callable
+import time
 import uuid
 
 from pvz_env import EpisodeConfig, EpisodeMetadata, PvZEnvironment
@@ -15,7 +16,9 @@ from pvz_deeplearning.adapters import PvZGymEnv
 from pvz_deeplearning.harness import HARNESS_RELEASE, assert_supported_harness_contract
 
 
-TRAINING_SUPPORT_RELEASE = "v0.2.0"
+TRAINING_SUPPORT_RELEASE = "v0.2.1"
+PLAYABLE_TIMEOUT_SECONDS = 20.0
+PLAYABLE_POLL_SECONDS = 0.10
 
 
 class LiveEnvironmentError(RuntimeError):
@@ -65,6 +68,7 @@ class LiveEnvironmentBundle:
     runtime: Any
     episode_support: Any
     recovery: RecoveryPolicy
+    reset_to_playable_seconds: float | None = None
 
     def close(self) -> None:
         self.episode_support.shutdown()
@@ -89,6 +93,24 @@ def validate_level_profile(state: Any, level: Any) -> None:
         raise LiveEnvironmentError(f"configured seeds {expected} != observed seeds {observed}")
     if bool(state.paused):
         raise LiveEnvironmentError("prepared level is paused")
+
+
+def wait_until_playable(runtime: Any, level: Any, *, timeout_seconds: float = PLAYABLE_TIMEOUT_SECONDS,
+                        poll_seconds: float = PLAYABLE_POLL_SECONDS, clock: Callable[[], float] = time.monotonic,
+                        sleeper: Callable[[float], None] = time.sleep) -> float:
+    """Read-only gate between verified reset and strategic Gym interaction."""
+    started = clock()
+    while True:
+        state = runtime.observe()
+        if state is not None:
+            validate_level_profile(state, level)
+            phase = getattr(runtime.phase, "value", runtime.phase)
+            if phase == "playing" and bool(runtime.health.can_act) and not bool(state.paused):
+                return clock() - started
+        elapsed = clock() - started
+        if elapsed >= timeout_seconds:
+            raise LiveEnvironmentError("reset_to_playable_timeout")
+        sleeper(min(poll_seconds, timeout_seconds - elapsed))
 
 
 def build_live_environment(
@@ -160,8 +182,7 @@ def build_live_environment(
             if recovery.on_technical_interruption() is RecoveryAction.STOP_CLEANLY:
                 raise LiveEnvironmentError("bounded process recovery exhausted")
             runtime.reattach()
-        fresh = runtime.observe()
-        validate_level_profile(fresh, level)
+        bundle.reset_to_playable_seconds = wait_until_playable(runtime, level)
         recovery.recovered()
 
     environment = PvZEnvironment(runtime.reader_adapter(), runtime.controller_adapter())
@@ -169,4 +190,5 @@ def build_live_environment(
         environment, episode_factory, prepare_reset=prepare_reset,
         before_step=support.pickups.collect_once,
     )
-    return LiveEnvironmentBundle(gym_environment, environment, runtime, support, recovery)
+    bundle = LiveEnvironmentBundle(gym_environment, environment, runtime, support, recovery)
+    return bundle

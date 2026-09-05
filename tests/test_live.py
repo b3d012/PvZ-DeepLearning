@@ -4,7 +4,7 @@ from types import SimpleNamespace
 from pvz_deeplearning.config import LevelProfile
 from pvz_deeplearning.live import (
     LiveEnvironmentError, RecoveryAction, RecoveryPolicy, build_live_environment,
-    validate_level_profile,
+    validate_level_profile, wait_until_playable,
 )
 
 
@@ -17,15 +17,16 @@ def profile(**changes):
     return LevelProfile(**values)
 
 
-def game_state(level=7, seeds=(0, 1)):
-    return SimpleNamespace(adventure_level=level, paused=False,
+def game_state(level=7, seeds=(0, 1), paused=False):
+    return SimpleNamespace(adventure_level=level, paused=paused,
         seeds=[SimpleNamespace(type_id=x) for x in seeds])
 
 
 class FakeRuntime:
     def __init__(self, state):
         self.state = state
-        self.health = SimpleNamespace(can_observe=True)
+        self.health = SimpleNamespace(can_observe=True, can_act=True)
+        self.phase = SimpleNamespace(value="playing")
         self.closed = False
 
     def attach(self): return None
@@ -81,3 +82,18 @@ class LiveFactoryTests(unittest.TestCase):
         self.assertEqual(policy.on_technical_interruption(), RecoveryAction.STOP_CLEANLY)
         policy.recovered()
         self.assertEqual(policy.attempts, 0)
+
+    def test_playable_gate_waits_for_playing_without_input(self):
+        runtime = FakeRuntime(game_state())
+        runtime.phase = SimpleNamespace(value="ready")
+        ticks = iter((0.0, 0.0, 0.1, 0.1))
+        def sleep(_): runtime.phase = SimpleNamespace(value="playing")
+        self.assertEqual(wait_until_playable(runtime, profile(), clock=lambda: next(ticks), sleeper=sleep), 0.1)
+
+    def test_playable_gate_fails_closed_for_timeout_or_bad_state(self):
+        runtime = FakeRuntime(game_state())
+        runtime.phase = SimpleNamespace(value="ready")
+        with self.assertRaisesRegex(LiveEnvironmentError, "timeout"):
+            wait_until_playable(runtime, profile(), timeout_seconds=0.0, sleeper=lambda _: None)
+        with self.assertRaisesRegex(LiveEnvironmentError, "configured level"):
+            wait_until_playable(FakeRuntime(game_state(level=6)), profile(), timeout_seconds=0.0)

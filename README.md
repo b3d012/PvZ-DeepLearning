@@ -1,6 +1,6 @@
 # PvZ Deep Learning
 
-An auditable deep-reinforcement-learning research stack for the real Plants vs. Zombies GOTY 1.2.0.1073 client, built strictly above [PvZ AI Harness v0.2.0](https://github.com/b3d012/PvZ-AI-Harness/releases/tag/v0.2.0).
+An auditable deep-reinforcement-learning research stack for the real Plants vs. Zombies GOTY 1.2.0.1073 client, built strictly above [PvZ AI Harness v0.2.1](https://github.com/b3d012/PvZ-AI-Harness/releases/tag/v0.2.1).
 
 > **Status:** Phase 4 offline implementation is complete and its live factory
 > is release-gated. The harness training-lifecycle candidate is pushed but not
@@ -9,7 +9,7 @@ An auditable deep-reinforcement-learning research stack for the real Plants vs. 
 
 ```mermaid
 flowchart TD
-    G[PvZ GOTY] <--> H[PvZ-AI-Harness v0.2.0]
+    G[PvZ GOTY] <--> H[PvZ-AI-Harness v0.2.1]
     H --> E[Environment v1: Observation 5534 / Action 541 / Reward v1]
     E --> A[Gymnasium adapter + masks]
     A --> P[SB3-Contrib MaskablePPO]
@@ -34,7 +34,7 @@ python -m pip install -e .[tuning,tensorboard]
 pvz-dl doctor
 ```
 
-The harness dependency is pinned to immutable tag `v0.2.0` at resolved commit `1fb399f2873b6c36f26269385a751389a4ab95bf`. Local editable harness development is allowed for development only; durable runs record both release and resolved commit.
+The harness dependency is pinned to immutable tag `v0.2.1` at resolved commit `7f0b71049362b0efe4171b937f47a8acc1d6d1ef`. Local editable harness development is allowed for development only; durable runs record both release and resolved commit.
 
 ## Commands
 
