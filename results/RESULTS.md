@@ -14,7 +14,7 @@ Game RNG was uncontrolled.
 |---|---|---:|---|---|---:|---|
 | random-valid | prior live pilot | 3 | 0.07, 0.07, 0.05 | 8, 7, 6 | 0 | ~10,000 steps/hour |
 | scripted-heuristic | `scripted-heuristic-live.json` | 3 | 0.04, 0.0475, 0.08 | 9, 9, 9 | 0 | 540.2 s / ~10,230 steps/hour |
-| MaskablePPO `mlp_small` | run `20260913T204411Z-live_pilot-9ccdb258` | 3 episodes, 512 steps | pilot completed; SB3 rollout mean 0.07 | live training episodes were horizon-bounded | 0 | 195 s / ~9,450 steps/hour |
+| MaskablePPO `mlp_small` | run `20260913T204411Z-live_pilot-9ccdb258` | 1 completed episode, 512 steps (configured max 3) | pilot completed; SB3 rollout mean 0.07 | horizon-bounded | 0 | 195 s / ~9,450 steps/hour |
 | resumed checkpoint evaluation | `checkpoint-live.json` | 3 | 0.065, 0.05, 0.09 | 9, 7, 9 | 0 | 561.8 s / ~9,850 steps/hour |
 
 The PPO result is a systems/learning-signal pilot only; no convergence or
