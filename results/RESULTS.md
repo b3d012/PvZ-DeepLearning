@@ -4,7 +4,7 @@ Real-game results below are bounded PILOT evidence, not statistically conclusive
 
 ## Phase 4 live pilot — Adventure 1-7 — 13 September 2026
 
-Common provenance: Phase4 merge `9ccdb2583746a6308491afbb9d12bceab03491d4`,
+Scripted/PPO provenance: Phase4 merge `9ccdb2583746a6308491afbb9d12bceab03491d4`,
 PvZ-AI-Harness `v0.2.3` resolved at
 `43fd924808b6d0b0bd4bf9956e7c525a48054b8b`, Observation v1 `(5534,)`, Action
 v1 (541), 250 ms decisions, Reward v1, six seeds, active rows 0–4, CPU.
@@ -12,7 +12,7 @@ Game RNG was uncontrolled.
 
 | Policy | Run/evaluation | Episodes | Returns | Waves | Technical truncations | Wall time / throughput |
 |---|---|---:|---|---|---:|---|
-| random-valid | prior live pilot | 3 | 0.07, 0.07, 0.05 | 8, 7, 6 | 0 | ~10,000 steps/hour |
+| random-valid | prior live pilot (v0.2.2; pre-v0.2.3 reset fix) | 3 | 0.07, 0.07, 0.05 | 8, 7, 6 | 0 | ~10,000 steps/hour |
 | scripted-heuristic | `scripted-heuristic-live.json` | 3 | 0.04, 0.0475, 0.08 | 9, 9, 9 | 0 | 540.2 s / ~10,230 steps/hour |
 | MaskablePPO `mlp_small` | run `20260913T204411Z-live_pilot-9ccdb258` | 1 completed episode, 512 steps (configured max 3) | pilot completed; SB3 rollout mean 0.07 | horizon-bounded | 0 | 195 s / ~9,450 steps/hour |
 | resumed checkpoint evaluation | `checkpoint-live.json` | 3 | 0.065, 0.05, 0.09 | 9, 7, 9 | 0 | 561.8 s / ~9,850 steps/hour |
