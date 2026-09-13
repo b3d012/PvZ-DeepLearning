@@ -3,9 +3,10 @@
 An auditable deep-reinforcement-learning research stack for the real Plants vs. Zombies GOTY 1.2.0.1073 client, built strictly above [PvZ AI Harness v0.2.3](https://github.com/b3d012/PvZ-AI-Harness/releases/tag/v0.2.3).
 
 > **Status:** Phase 4 offline implementation is complete and its live factory
-> is release-gated. The harness v0.2.3 reset lifecycle is integrated; real
-> scripted/PPO pilot completion remains the active validation gate. No learned
-> strategy claim is made.
+> is operational for bounded real pilots. Random-valid, scripted-heuristic,
+> MaskablePPO, checkpoint/resume, and live checkpoint evaluation are recorded
+> as PILOT evidence. Long training remains pending; no learned strategy claim
+> is made.
 
 ```mermaid
 flowchart TD

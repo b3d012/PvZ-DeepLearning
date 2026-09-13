@@ -21,6 +21,13 @@ The following are inherited from the harness and should be treated as controlled
 
 The current Phase 4 dependency is pinned to harness release `v0.2.3`.
 
+The first real Adventure 1-7 validation milestone is complete as bounded PILOT
+evidence: random-valid and scripted baselines (three episodes each), a 512-step
+MaskablePPO pilot, checkpoint/resume, and live checkpoint evaluation. The
+episodes were horizon-bounded with uncontrolled game RNG, so this does not
+establish learned competence or baseline superiority. Long training remains
+the next research campaign.
+
 ## Research questions
 
 1. Which deep-RL family best fits the fixed discrete masked action space and expensive real-time environment interaction?
