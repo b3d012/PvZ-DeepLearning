@@ -1,5 +1,11 @@
 # Changelog
 
+## Phase 4 pilot milestone — 2026-09-13
+
+- Adopted PvZ-AI-Harness v0.2.3 and completed bounded real Adventure 1-7
+  random, scripted, MaskablePPO, checkpoint/resume, and checkpoint-evaluation
+  pilots. Results are explicitly PILOT evidence; long training is pending.
+
 ## Unreleased — 0.1.0a1
 
 - Selected Gymnasium + Stable-Baselines3/sb3-contrib MaskablePPO after a Phase 4.1 design study.
