@@ -58,14 +58,14 @@ tensorboard --logdir artifacts/runs/RUN/tensorboard
 
 ## Reproducibility and results
 
-Each ignored `artifacts/runs/<run-id>/` contains an immutable manifest, resolved YAML, checkpoints, JSONL metrics, evaluation, TensorBoard, and transitions. Manifests record Git/harness IDs, all schemas, level, architecture, hyperparameters, five software seed roles, uncontrolled game RNG, versions, device, timing, budget, and lineage. A separate immutable `run_completion.json` records final checkpoint path/SHA256, step, completion reason, finish time, and optional evaluation reference. Raw checkpoints never enter Git. Curated real/pilot/mock classifications live in [results/RESULTS.md](results/RESULTS.md); there are currently no real learned-policy results.
+Each ignored `artifacts/runs/<run-id>/` contains an immutable manifest, resolved YAML, checkpoints, JSONL metrics, evaluation, TensorBoard, and transitions. Manifests record Git/harness IDs, all schemas, level, architecture, hyperparameters, five software seed roles, uncontrolled game RNG, versions, device, timing, budget, and lineage. A separate immutable `run_completion.json` records final checkpoint path/SHA256, step, completion reason, finish time, and optional evaluation reference. Raw checkpoints never enter Git. Curated real/pilot/mock classifications live in [results/RESULTS.md](results/RESULTS.md); bounded real pilots are recorded as PILOT evidence and long training remains pending.
 
 The first live candidate is Adventure 1-7: a normal daytime five-lane lawn, fixed six-packet seed bank, 1x speed, and 250 ms strategic decisions. It is prepared normally and verified through memory because forced earlier levels were unstable on the target installation. Evaluation separates natural win/loss from horizon and technical truncations and reports distributions, not a best episode. See [research plan](docs/RESEARCH_PLAN.md) and [technical report](docs/technical-report.tex).
 
 ## Limitations and roadmap
 
-- A read-only check observed a real paused Adventure level 7 Board and the candidate outcome evidence mapped it to `RUNNING`; no WON/LOST, reset, pickup, model-action, reward, resume, evaluation, or throughput result is claimed.
-- Harness v0.2.0 is the durable immutable pin. Its lifecycle support is live
+- The bounded real pilot used Adventure 1-7 with supported reset, masked actions, checkpoints, resume, live evaluation, and reward audit; results remain PILOT evidence with uncontrolled game RNG.
+- Harness v0.2.3 is the durable immutable pin. Its lifecycle support is live
   validated: terminal outcomes, active/pause-menu/loss/win same-level reset,
   managed pickup collection, and runtime serialization.
 - PvZ RNG is not controlled by recorded software seeds.

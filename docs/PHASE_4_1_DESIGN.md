@@ -48,11 +48,10 @@ The first baseline preserves `harness_reward_v1`: terminal ±1, wave delta shapi
 
 ## Blockers and release decision
 
-The harness feature branch now has typed raw outcome evidence, reset
-postcondition verification, and synchronous serialized pickup collection. Its
-199-test offline suite passes. A read-only real Board produced `RUNNING`, but
-WON/LOST and pickup behavior are not validated, and reset has only an
-operator-assisted callback: no automatic driver is claimed. Phase 4 therefore
-keeps the released harness pin and the live factory refuses construction until the
-validated reset-capable harness release is available.
-published. Game speed remains 1x.
+The integrated harness v0.2.3 provides typed outcome evidence, reset
+postcondition verification, synchronous serialized pickup collection, and
+cross-read board-replacement confirmation. Its 223-test offline suite passes.
+The first bounded real Adventure 1-7 baselines and MaskablePPO checkpoint
+pilots completed without technical truncation; these are systems PILOT results,
+not evidence of learned competence. Long multi-seed training remains pending.
+Game speed remains 1x.
