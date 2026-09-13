@@ -27,7 +27,7 @@ Stable-Baselines3 2.9.0, sb3-contrib 2.9.0, Gymnasium 1.2.2, and PyTorch 2.x are
 
 `PvZGymEnv` is a thin wrapper; the harness is not changed to mimic a framework. Harness observations and action indexes pass through unchanged. `action_masks()` returns a defensive bool copy. Natural `WIN`/`LOSS` becomes `terminated`; horizon becomes `truncated`; unavailable state, process/focus/runtime failures become technical truncations. This distinction preserves correct bootstrapping semantics and prevents the policy from learning that losing Windows focus means losing PvZ.
 
-Reset preparation is injected through the released v0.2.2 harness reset service; the adapter still refuses to bypass harness lifecycle and health checks.
+Reset preparation is injected through the released v0.2.3 harness reset service; the adapter still refuses to bypass harness lifecycle and health checks.
 
 ## Initial condition and protocol
 
