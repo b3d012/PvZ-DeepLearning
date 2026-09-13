@@ -16,7 +16,7 @@ from pvz_deeplearning.adapters import PvZGymEnv
 from pvz_deeplearning.harness import HARNESS_RELEASE, assert_supported_harness_contract
 
 
-TRAINING_SUPPORT_RELEASE = "v0.2.1"
+TRAINING_SUPPORT_RELEASE = "v0.2.2"
 PLAYABLE_TIMEOUT_SECONDS = 20.0
 PLAYABLE_POLL_SECONDS = 0.10
 

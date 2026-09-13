@@ -27,7 +27,7 @@ Stable-Baselines3 2.9.0, sb3-contrib 2.9.0, Gymnasium 1.2.2, and PyTorch 2.x are
 
 `PvZGymEnv` is a thin wrapper; the harness is not changed to mimic a framework. Harness observations and action indexes pass through unchanged. `action_masks()` returns a defensive bool copy. Natural `WIN`/`LOSS` becomes `terminated`; horizon becomes `truncated`; unavailable state, process/focus/runtime failures become technical truncations. This distinction preserves correct bootstrapping semantics and prevents the policy from learning that losing Windows focus means losing PvZ.
 
-Reset preparation is injected. Under v0.1.0, only operator-prepared adoption is truthful. The adapter is ready for a future released harness reset service, but the live CLI refuses autonomous training until that exists.
+Reset preparation is injected through the released v0.2.2 harness reset service; the adapter still refuses to bypass harness lifecycle and health checks.
 
 ## Initial condition and protocol
 
@@ -53,5 +53,6 @@ postcondition verification, and synchronous serialized pickup collection. Its
 199-test offline suite passes. A read-only real Board produced `RUNNING`, but
 WON/LOST and pickup behavior are not validated, and reset has only an
 operator-assisted callback: no automatic driver is claimed. Phase 4 therefore
-keeps the v0.1.0 pin and the live factory refuses construction until v0.2.0 is
+keeps the released harness pin and the live factory refuses construction until the
+validated reset-capable harness release is available.
 published. Game speed remains 1x.

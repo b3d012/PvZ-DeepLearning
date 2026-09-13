@@ -2,7 +2,7 @@
 
 ## Goal
 
-Phase 4 begins the learned-agent portion of the project. The objective is to train and evaluate deep reinforcement-learning policies against the real Plants vs. Zombies GOTY game while treating `PvZ-AI-Harness` v0.1.0 as a frozen, versioned environment boundary.
+Phase 4 begins the learned-agent portion of the project. The objective is to train and evaluate deep reinforcement-learning policies against the real Plants vs. Zombies GOTY game while treating `PvZ-AI-Harness` v0.2.2 as a frozen, versioned environment boundary.
 
 The research question is not merely whether a network can produce clicks. The project should test whether a learned policy can develop useful strategic behavior from the structured state/action interface and outperform transparent non-learned baselines under a reproducible protocol.
 
@@ -19,7 +19,7 @@ The following are inherited from the harness and should be treated as controlled
 - PID-bound runtime, focus/pause safety, reattachment, and diagnostics;
 - frozen random and scripted engineering baselines.
 
-The initial Phase 4 dependency is pinned to harness release `v0.1.0`.
+The current Phase 4 dependency is pinned to harness release `v0.2.2`.
 
 ## Research questions
 
@@ -140,7 +140,7 @@ If Phase 4 discovers a missing low-level capability, first decide whether the pr
   placement problem.
 - **Reward:** unchanged harness Reward v1. Additional shaping requires a new named/versioned profile and reward-component tests.
 - **Tuning objective:** held-out normalized wave progress, then evaluation return while wins remain sparse; win rate becomes primary only after natural outcomes are reliable and frequent.
-- **Reset/pickup/speed:** operator-prepared reset, no managed pickup service, and 1x only under harness v0.1.0. These are explicit blockers, not model-layer workarounds.
+- **Reset/pickup/speed:** verified same-level reset and managed pickup support are consumed from harness v0.2.2; speed remains 1x.
 
 Alternatives and the full rationale are recorded in `docs/PHASE_4_1_DESIGN.md`.
 
