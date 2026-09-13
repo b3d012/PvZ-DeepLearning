@@ -41,3 +41,7 @@ jobs:
       - name: Run offline tests
         shell: pwsh
         run: python -m unittest discover -s tests -p "test_*.py" -v
+
+      - name: Run masked learning smoke command
+        shell: pwsh
+        run: pvz-dl train --config configs/experiments/mock_smoke.yaml --output artifacts/ci-runs

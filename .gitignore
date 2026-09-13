@@ -28,6 +28,12 @@ Thumbs.db
 checkpoints/
 models/checkpoints/
 artifacts/
+artifacts/runs/
+artifacts/tuning/
+
+# Durable Codex configuration is tracked; runtime autonomy evidence is not.
+.codex/state/
+artifacts/autonomy/
 datasets/
 data/
 trajectories/
@@ -53,6 +59,12 @@ optuna*.db
 # Generated result payloads; keep curated summaries
 results/*
 !results/README.md
+!results/RESULTS.md
+!results/levels/
+!results/levels/**
+!results/RESULTS.md
+!results/levels/
+!results/levels/**
 
 # Temporary experiment outputs
 scratch/

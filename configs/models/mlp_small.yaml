@@ -1,0 +1,3 @@
+id: maskable_ppo_mlp_small
+net_arch: [128, 128]
+activation_fn: tanh

@@ -1,0 +1,11 @@
+id: adventure_1_7
+adventure_level: 7
+active_rows: [true, true, true, true, true, false]
+step_interval_seconds: 0.25
+max_episode_steps: 512
+auto_collect_pickups: true
+reset_strategy: managed_current_level
+expected_seed_types: [Peashooter, Sunflower, Cherry Bomb, Wall-nut, Potato Mine, Snow Pea]
+reward_profile: harness_reward_v1
+evaluation_metric: normalized_wave_progress_then_return
+training_speed: 1.0

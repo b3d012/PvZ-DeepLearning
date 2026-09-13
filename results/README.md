@@ -1,7 +1,5 @@
-# Results
+# Results policy
 
-This directory is for **small, curated, version-controlled research summaries**: benchmark tables, final metrics, ablation summaries, and links to reproducible run manifests.
+Only small curated summaries belong here. Every entry must be classified **REAL**, **PILOT**, or **MOCK** and identify run/checkpoint, Git SHA, harness release/SHA, level profile, seeds, training steps, and evaluation protocol. Raw runs and checkpoints stay under ignored `artifacts/`.
 
-Generated payloads are ignored by default. Do not commit large checkpoints, raw trajectories, TensorBoard/W&B folders, tuning databases, or datasets here.
-
-When results are promoted into Git, include enough metadata to identify the exact model/config/seed, repository commit, harness release/contract, and evaluation protocol that produced them.
+See [RESULTS.md](RESULTS.md) for the global index and `levels/` for per-level records.

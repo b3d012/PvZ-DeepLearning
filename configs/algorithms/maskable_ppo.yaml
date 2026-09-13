@@ -1,0 +1,5 @@
+algorithm: maskable_ppo
+library: sb3-contrib
+library_version: 2.9.0
+mask_during_training: true
+mask_during_evaluation: true

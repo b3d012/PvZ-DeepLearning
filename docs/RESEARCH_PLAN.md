@@ -2,7 +2,7 @@
 
 ## Goal
 
-Phase 4 begins the learned-agent portion of the project. The objective is to train and evaluate deep reinforcement-learning policies against the real Plants vs. Zombies GOTY game while treating `PvZ-AI-Harness` v0.1.0 as a frozen, versioned environment boundary.
+Phase 4 begins the learned-agent portion of the project. The objective is to train and evaluate deep reinforcement-learning policies against the real Plants vs. Zombies GOTY game while treating `PvZ-AI-Harness` v0.2.3 as a frozen, versioned environment boundary.
 
 The research question is not merely whether a network can produce clicks. The project should test whether a learned policy can develop useful strategic behavior from the structured state/action interface and outperform transparent non-learned baselines under a reproducible protocol.
 
@@ -19,7 +19,14 @@ The following are inherited from the harness and should be treated as controlled
 - PID-bound runtime, focus/pause safety, reattachment, and diagnostics;
 - frozen random and scripted engineering baselines.
 
-The initial Phase 4 dependency is pinned to harness release `v0.1.0`.
+The current Phase 4 dependency is pinned to harness release `v0.2.3`.
+
+The first real Adventure 1-7 validation milestone is complete as bounded PILOT
+evidence: random-valid and scripted baselines (three episodes each), a 512-step
+MaskablePPO pilot, checkpoint/resume, and live checkpoint evaluation. The
+episodes were horizon-bounded with uncontrolled game RNG, so this does not
+establish learned competence or baseline superiority. Long training remains
+the next research campaign.
 
 ## Research questions
 
@@ -129,6 +136,27 @@ Large generated artifacts stay out of Git. Checkpoints, datasets, trajectories, 
 
 If Phase 4 discovers a missing low-level capability, first decide whether the problem belongs to the learning layer or the harness. Harness fixes happen in `PvZ-AI-Harness`, receive their own tests/release/version, and are then deliberately adopted here. Phase 4 must not silently fork the harness inside this repository.
 
-## Next decision
+## Decisions made in Phase 4.1
 
-The next implementation task is **Phase 4.1**: compare practical RL interface/algorithm options for this exact observation/action/timing setup, select the initial experimental protocol, and only then add the first ML/RL dependency.
+- **Framework:** Gymnasium 1.2.2 with Stable-Baselines3/sb3-contrib 2.9.0. A thin adapter preserves the harness contract and Gymnasium's terminated/truncated distinction.
+- **First algorithm:** MaskablePPO. Native changing-action masks and mature local checkpoint/metric support outweigh its on-policy sample-efficiency limitation for the first baseline. DQN variants remain the most important future off-policy comparison.
+- **Model:** flat Observation v1 MLP `[128,128]`, with tracked medium/large variants. A structured extractor is deferred until observation slices are public versioned metadata.
+- **Initial level:** Adventure 1-4, a regular five-lane daytime economy/defense
+  level. The earlier 1-5 proposal was rejected because it is Wall-nut Bowling,
+  a conveyor/bowling condition that does not exercise the intended Action v1
+  placement problem.
+- **Reward:** unchanged harness Reward v1. Additional shaping requires a new named/versioned profile and reward-component tests.
+- **Tuning objective:** held-out normalized wave progress, then evaluation return while wins remain sparse; win rate becomes primary only after natural outcomes are reliable and frequent.
+- **Reset/pickup/speed:** verified same-level reset and managed pickup support are consumed from harness v0.2.3; speed remains 1x.
+
+Alternatives and the full rationale are recorded in `docs/PHASE_4_1_DESIGN.md`.
+
+## Immediate experiment sequence
+
+1. Release backward-compatible authoritative terminal, verified same-level reset, and serialized pickup support in the harness after offline and live validation.
+2. Pin that immutable release and update contract metadata here.
+3. Run a bounded Adventure 1-4 attach/reset/action/reward/checkpoint/resume pilot.
+4. Evaluate random-valid, scripted, and learned policies with the identical protocol.
+5. Run sequential Optuna trials, then fresh multi-seed confirmation on held-out episodes.
+
+Open research questions remain data efficiency versus off-policy methods, decision-interval sensitivity, mask ablation, reward robustness, architecture scaling, and specialist-versus-curriculum transfer.

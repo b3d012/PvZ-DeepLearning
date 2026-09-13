@@ -13,3 +13,6 @@ __all__ = [
     "assert_supported_harness_contract",
     "harness_contract",
 ]
+"""Versioned Phase 4 reinforcement-learning research package."""
+
+__version__ = "0.1.0a1"
