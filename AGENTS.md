@@ -212,3 +212,22 @@ The Phase 1–3.5 technical history remains in the harness repository and should
   Unknown paused modals fail closed and reset postconditions remain authoritative.
 - Adventure 1-7 is the normal daytime controlled condition. Earlier forced-level
   selection was unstable on the target installation; do not return to 1-4/1-5.
+
+## Autonomous workflow rules
+
+- PvZ-DeepLearning is the primary writable product repository for this phase.
+- PvZ-AI-Harness is read-only by default; pvztoolkit is read/execute-only by default,
+  and the game installation is execution/interact-only. Changes outside this repository
+  require explicit scope and separate evidence.
+- Protect all frozen public contracts. Use an inspect -> implement -> test -> review ->
+  live-test -> fix loop, with bounded retries; never loop indefinitely on the same failure.
+- Definition of Done requires the requested change, offline validation, independent review,
+  provenance/documentation updates where applicable, and live evidence only when the task
+  explicitly authorizes a live run. Mock output must never be described as live evidence.
+- Computer Use is limited to explicit, visible, safety-checked game interaction. Never use
+  blind clicks or bypass harness focus, pause, watchdog, reset, or safety checks.
+- Stop and request human direction for destructive Git operations, unclear ownership,
+  contract changes, unexplained live-state divergence, missing required credentials/access,
+  or repeated validation failure after the bounded retry budget.
+- Preserve user worktrees and working-tree changes. Do not reset, clean, force-push, rewrite
+  history, or discard changes autonomously.

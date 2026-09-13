@@ -30,6 +30,10 @@ models/checkpoints/
 artifacts/
 artifacts/runs/
 artifacts/tuning/
+
+# Durable Codex configuration is tracked; runtime autonomy evidence is not.
+.codex/state/
+artifacts/autonomy/
 datasets/
 data/
 trajectories/

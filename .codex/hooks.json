@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "E:\\Dev\\miniconda3\\envs\\pvz-rl\\python.exe .codex/hooks/safety_guard.py"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "E:\\Dev\\miniconda3\\envs\\pvz-rl\\python.exe .codex/hooks/stop_gate.py"
+          }
+        ]
+      }
+    ]
+  }
+}
