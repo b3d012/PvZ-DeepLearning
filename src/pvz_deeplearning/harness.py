@@ -7,7 +7,7 @@ from typing import Any
 from pvz_env import environment_contract
 
 
-HARNESS_RELEASE = "v0.2.1"
+HARNESS_RELEASE = "v0.2.2"
 
 EXPECTED_HARNESS_CONTRACT: dict[str, Any] = {
     "observation_schema_version": 1,
